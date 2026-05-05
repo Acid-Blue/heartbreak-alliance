@@ -12,6 +12,7 @@
   <view class="boundary">{{boundary}}</view>
 
   <view wx:if="{{loading}}" class="empty">正在整理今天的小队动态...</view>
+  <view wx:elif="{{error}}" class="empty card" bindtap="loadHome">{{error}}</view>
 
   <block wx:else>
     <view class="section">

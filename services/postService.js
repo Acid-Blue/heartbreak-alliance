@@ -9,7 +9,8 @@ const postTypes = [
 ];
 
 const emotionTags = ["反复想联系", "睡不着", "委屈", "清醒一点", "想被理解", "正在重建"];
-const visibilityOptions = ["小队可见", "仅自己和Agent可见"];
+const PUBLIC_VISIBILITY = "小队可见";
+const visibilityOptions = [PUBLIC_VISIBILITY, "仅自己和Agent可见"];
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -19,12 +20,16 @@ function allPosts() {
   return createdPosts.concat(posts);
 }
 
+function publicPosts() {
+  return allPosts().filter((post) => post.visibility === PUBLIC_VISIBILITY);
+}
+
 function getFeed() {
-  return Promise.resolve(clone(allPosts()));
+  return Promise.resolve(clone(publicPosts()));
 }
 
 function getPostsByCommunity(communityId) {
-  return Promise.resolve(clone(allPosts().filter((post) => post.communityId === communityId)));
+  return Promise.resolve(clone(publicPosts().filter((post) => post.communityId === communityId)));
 }
 
 function getMyPosts() {
@@ -33,6 +38,7 @@ function getMyPosts() {
 
 function createPost(payload) {
   const selectedType = postTypes.find((item) => item.value === payload.type) || postTypes[0];
+  const visibility = visibilityOptions.includes(payload.visibility) ? payload.visibility : PUBLIC_VISIBILITY;
   const post = {
     id: `post-local-${Date.now()}`,
     communityId: payload.communityId,
@@ -43,7 +49,7 @@ function createPost(payload) {
     content: payload.content,
     createdAt: new Date().toISOString(),
     commentCount: 0,
-    visibility: payload.visibility || "小队可见"
+    visibility
   };
 
   createdPosts.unshift(post);

@@ -4,6 +4,7 @@ const { formatRelativeTime } = require("../../utils/format");
 Page({
   data: {
     loading: true,
+    error: "",
     user: null,
     joinedCommunities: [],
     myPosts: [],
@@ -21,6 +22,11 @@ Page({
   },
 
   loadProfile() {
+    this.setData({
+      loading: true,
+      error: ""
+    });
+
     Promise.all([
       userService.getCurrentUser(),
       userService.getJoinedCommunities(),
@@ -33,6 +39,11 @@ Page({
           ...post,
           relativeTime: formatRelativeTime(post.createdAt)
         })),
+        loading: false
+      });
+    }).catch(() => {
+      this.setData({
+        error: "个人空间加载失败，请稍后再试",
         loading: false
       });
     });

@@ -13,7 +13,7 @@ function getFeaturedCommunities() {
 }
 
 function getCommunity(id) {
-  const community = communities.find((item) => item.id === id) || communities[0];
+  const community = communities.find((item) => item.id === id) || null;
   return Promise.resolve(clone(community));
 }
 

@@ -3,6 +3,7 @@
   <view class="page-intro">固定小队更像读书会：持续在场、慢慢熟悉、一起把混乱的日子整理清楚。</view>
 
   <view wx:if="{{loading}}" class="empty">正在加载阵线小队...</view>
+  <view wx:elif="{{error}}" class="empty card" bindtap="loadCommunities">{{error}}</view>
 
   <view wx:else class="community-list">
     <view wx:if="{{communities.length === 0}}" class="empty card">暂时没有开放的小队。</view>

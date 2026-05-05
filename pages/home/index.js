@@ -6,6 +6,7 @@ const { formatRelativeTime } = require("../../utils/format");
 Page({
   data: {
     loading: true,
+    error: "",
     user: null,
     featuredCommunities: [],
     feed: [],
@@ -23,6 +24,11 @@ Page({
   },
 
   loadHome() {
+    this.setData({
+      loading: true,
+      error: ""
+    });
+
     Promise.all([
       userService.getCurrentUser(),
       communityService.getFeaturedCommunities(),
@@ -35,6 +41,11 @@ Page({
           ...post,
           relativeTime: formatRelativeTime(post.createdAt)
         })),
+        loading: false
+      });
+    }).catch(() => {
+      this.setData({
+        error: "内容加载失败，请稍后再试",
         loading: false
       });
     });

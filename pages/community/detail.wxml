@@ -1,5 +1,6 @@
 <view class="page detail-page">
   <view wx:if="{{loading}}" class="empty">正在进入小队...</view>
+  <view wx:elif="{{error}}" class="empty card" bindtap="loadDetail">{{error}}</view>
 
   <block wx:else>
     <view class="detail-head card">

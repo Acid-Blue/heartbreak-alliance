@@ -4,6 +4,7 @@ const { formatRelativeTime } = require("../../utils/format");
 Page({
   data: {
     loading: true,
+    error: "",
     messages: [],
     inputValue: "",
     sending: false,
@@ -16,11 +17,21 @@ Page({
   },
 
   loadMessages() {
+    this.setData({
+      loading: true,
+      error: ""
+    });
+
     agentService.getAgentMessages().then((messages) => {
       this.setData({
         messages: this.decorateMessages(messages),
         loading: false
       }, this.scrollToBottom);
+    }).catch(() => {
+      this.setData({
+        error: "Agent 内容加载失败，请稍后再试",
+        loading: false
+      });
     });
   },
 
@@ -54,7 +65,10 @@ Page({
         sending: false
       }, this.scrollToBottom);
     }).catch(() => {
-      this.setData({ sending: false });
+      this.setData({
+        inputValue: content,
+        sending: false
+      });
       wx.showToast({
         title: "Agent 暂时没回应",
         icon: "none"

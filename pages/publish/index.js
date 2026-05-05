@@ -3,6 +3,8 @@ const postService = require("../../services/postService");
 
 Page({
   data: {
+    loading: true,
+    error: "",
     communityId: "squad-001",
     community: null,
     postTypes: postService.postTypes,
@@ -19,9 +21,31 @@ Page({
 
   onLoad(options) {
     const communityId = options.communityId || "squad-001";
-    this.setData({ communityId });
+    this.setData({
+      communityId,
+      loading: true,
+      error: ""
+    });
+
     communityService.getCommunity(communityId).then((community) => {
-      this.setData({ community });
+      if (!community) {
+        this.setData({
+          community: null,
+          error: "小队不存在或已关闭，暂时不能发布",
+          loading: false
+        });
+        return;
+      }
+
+      this.setData({
+        community,
+        loading: false
+      });
+    }).catch(() => {
+      this.setData({
+        error: "小队信息加载失败，请稍后再试",
+        loading: false
+      });
     });
   },
 
@@ -48,10 +72,18 @@ Page({
   },
 
   submitPost() {
-    const { form, communityId, submitting } = this.data;
+    const { form, communityId, community, submitting } = this.data;
     const content = form.content.trim();
 
     if (submitting) return;
+
+    if (!community) {
+      wx.showToast({
+        title: "小队不可用",
+        icon: "none"
+      });
+      return;
+    }
 
     if (!content) {
       wx.showToast({

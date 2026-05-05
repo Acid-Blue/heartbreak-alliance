@@ -1,5 +1,7 @@
 function formatRelativeTime(value) {
   const time = new Date(value).getTime();
+  if (!Number.isFinite(time)) return "";
+
   const now = Date.now();
   const diff = Math.max(0, now - time);
   const minute = 60 * 1000;

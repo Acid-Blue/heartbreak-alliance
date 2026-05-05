@@ -14,6 +14,7 @@
     scroll-into-view="{{scrollIntoView}}"
   >
     <view wx:if="{{loading}}" class="empty">Agent 正在整理上下文...</view>
+    <view wx:elif="{{error}}" class="empty card" bindtap="loadMessages">{{error}}</view>
     <view wx:else>
       <view
         wx:for="{{messages}}"

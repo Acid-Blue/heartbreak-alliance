@@ -1,5 +1,6 @@
 <view class="page profile-page">
   <view wx:if="{{loading}}" class="empty">正在加载个人空间...</view>
+  <view wx:elif="{{error}}" class="empty card" bindtap="loadProfile">{{error}}</view>
 
   <block wx:else>
     <view class="profile-card card">
