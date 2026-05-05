@@ -1,0 +1,87 @@
+.hero {
+  padding: 34rpx;
+  background: #fffdf8;
+}
+
+.hero-title {
+  font-size: 48rpx;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  margin-top: 16rpx;
+  color: #625c53;
+  font-size: 28rpx;
+  line-height: 1.65;
+}
+
+.hero-actions {
+  margin-top: 28rpx;
+}
+
+.hero-button {
+  margin: 0;
+}
+
+.community-grid {
+  display: grid;
+  gap: 18rpx;
+}
+
+.community-card {
+  padding: 26rpx;
+}
+
+.community-name {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.community-summary {
+  margin-top: 12rpx;
+  color: #625c53;
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.community-tags {
+  margin-top: 18rpx;
+}
+
+.community-meta {
+  margin-top: 18rpx;
+  color: #7c756c;
+  font-size: 24rpx;
+}
+
+.post-card {
+  margin-bottom: 18rpx;
+  padding: 24rpx;
+}
+
+.post-top,
+.post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.post-type {
+  color: #2f6655;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.post-time,
+.post-footer {
+  color: #7c756c;
+  font-size: 24rpx;
+}
+
+.post-content {
+  margin: 16rpx 0 18rpx;
+  font-size: 29rpx;
+  line-height: 1.65;
+}

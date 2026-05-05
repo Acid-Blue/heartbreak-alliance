@@ -1,0 +1,37 @@
+<view class="page detail-page">
+  <view wx:if="{{loading}}" class="empty">正在进入小队...</view>
+
+  <block wx:else>
+    <view class="detail-head card">
+      <view class="detail-title">{{community.name}}</view>
+      <view class="detail-summary">{{community.summary}}</view>
+      <view class="pill-row detail-tags">
+        <text wx:for="{{community.tags}}" wx:key="*this" class="pill">{{item}}</text>
+      </view>
+      <view class="detail-meta">{{community.memberCount}} 人 · 今日 {{community.activeToday}} 人在场 · {{community.mood}}</view>
+      <view class="detail-actions">
+        <button class="primary-button action-button" bindtap="openPublish">发布到小队</button>
+        <button class="secondary-button action-button" bindtap="openAgent">找 Agent 复盘</button>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">小队公开内容</text>
+        <text class="section-action">Agent 可参考</text>
+      </view>
+      <view wx:if="{{posts.length === 0}}" class="empty card">这个小队还没有内容，你可以成为第一个开口的人。</view>
+      <view wx:for="{{posts}}" wx:key="id" class="post-card card">
+        <view class="post-top">
+          <text class="post-type">{{item.typeText}}</text>
+          <text class="post-time">{{item.relativeTime}}</text>
+        </view>
+        <view class="post-content">{{item.content}}</view>
+        <view class="post-footer">
+          <text>{{item.authorName}} · {{item.emotion}}</text>
+          <text>{{item.commentCount}} 条回应</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

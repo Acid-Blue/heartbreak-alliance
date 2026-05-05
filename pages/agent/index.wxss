@@ -1,0 +1,93 @@
+.agent-page {
+  padding-bottom: 28rpx;
+}
+
+.agent-head {
+  padding: 28rpx;
+}
+
+.agent-title {
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.agent-subtitle {
+  margin-top: 12rpx;
+  color: #625c53;
+  font-size: 28rpx;
+  line-height: 1.55;
+}
+
+.context-line {
+  margin-top: 14rpx;
+  color: #2f6655;
+  font-size: 24rpx;
+}
+
+.message-list {
+  height: calc(100vh - 430rpx);
+  margin-top: 20rpx;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 18rpx;
+}
+
+.message.from-user {
+  justify-content: flex-end;
+}
+
+.message.from-agent {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 84%;
+  padding: 20rpx;
+}
+
+.from-user .bubble {
+  background: #eff6f1;
+  border-color: #cce1d5;
+}
+
+.message-content {
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.message-meta {
+  margin-top: 12rpx;
+  color: #7c756c;
+  font-size: 22rpx;
+  line-height: 1.4;
+}
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-top: 18rpx;
+  padding: 14rpx;
+}
+
+.composer-input {
+  flex: 1;
+  height: 68rpx;
+  padding: 0 16rpx;
+  font-size: 27rpx;
+}
+
+.send-button {
+  flex: 0 0 auto;
+  width: 132rpx;
+  height: 68rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 8rpx;
+  background: #2f6655;
+  color: #fffdf8;
+  font-size: 26rpx;
+  line-height: 68rpx;
+}

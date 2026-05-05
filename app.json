@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/community/index",
+    "pages/agent/index",
+    "pages/profile/index",
+    "pages/community/detail",
+    "pages/publish/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "失恋阵线联盟",
+    "navigationBarBackgroundColor": "#F8F4EE",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F8F4EE",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#7C756C",
+    "selectedColor": "#2F6655",
+    "backgroundColor": "#FFFDF8",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/community/index",
+        "text": "互助会",
+        "iconPath": "assets/icons/community.png",
+        "selectedIconPath": "assets/icons/community-active.png"
+      },
+      {
+        "pagePath": "pages/agent/index",
+        "text": "Agent",
+        "iconPath": "assets/icons/agent.png",
+        "selectedIconPath": "assets/icons/agent-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/icons/profile.png",
+        "selectedIconPath": "assets/icons/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

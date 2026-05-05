@@ -1,0 +1,62 @@
+const communityService = require("../../services/communityService");
+const postService = require("../../services/postService");
+const userService = require("../../services/userService");
+const { formatRelativeTime } = require("../../utils/format");
+
+Page({
+  data: {
+    loading: true,
+    user: null,
+    featuredCommunities: [],
+    feed: [],
+    boundary: getApp().globalData.serviceBoundary
+  },
+
+  onLoad() {
+    this.loadHome();
+  },
+
+  onShow() {
+    if (!this.data.loading) {
+      this.loadHome();
+    }
+  },
+
+  loadHome() {
+    Promise.all([
+      userService.getCurrentUser(),
+      communityService.getFeaturedCommunities(),
+      postService.getFeed()
+    ]).then(([user, featuredCommunities, feed]) => {
+      this.setData({
+        user,
+        featuredCommunities,
+        feed: feed.map((post) => ({
+          ...post,
+          relativeTime: formatRelativeTime(post.createdAt)
+        })),
+        loading: false
+      });
+    });
+  },
+
+  openCommunity(event) {
+    const { id } = event.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/community/detail?id=${id}`
+    });
+  },
+
+  openAgent() {
+    wx.switchTab({
+      url: "/pages/agent/index"
+    });
+  },
+
+  openPublish(event) {
+    const { id } = event.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/publish/index?communityId=${id || "squad-001"}`
+    });
+  }
+});

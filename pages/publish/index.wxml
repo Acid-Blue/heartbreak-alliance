@@ -1,0 +1,66 @@
+<view class="page publish-page">
+  <view class="publish-head">
+    <view class="page-title">写给阵线小队</view>
+    <view class="page-intro">先不用写得完整，把今天最真实的一段留下来就好。</view>
+    <view wx:if="{{community}}" class="target card">发布到：{{community.name}}</view>
+  </view>
+
+  <view class="section">
+    <view class="field-label">内容类型</view>
+    <view class="option-row">
+      <view
+        wx:for="{{postTypes}}"
+        wx:key="value"
+        class="option {{form.type === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="chooseType"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="field-label">现在更接近哪种状态</view>
+    <view class="option-row wrap">
+      <view
+        wx:for="{{emotionTags}}"
+        wx:key="*this"
+        class="option small {{form.emotion === item ? 'active' : ''}}"
+        data-value="{{item}}"
+        bindtap="chooseEmotion"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="field-label">正文</view>
+    <textarea
+      class="content-input card"
+      value="{{form.content}}"
+      maxlength="800"
+      placeholder="例如：今天最难受的时刻是什么？你希望队友怎么回应你？"
+      bindinput="onContentInput"
+    />
+    <view class="input-count">{{form.content.length}} / 800</view>
+  </view>
+
+  <view class="section">
+    <view class="field-label">可见范围</view>
+    <view class="option-row wrap">
+      <view
+        wx:for="{{visibilityOptions}}"
+        wx:key="*this"
+        class="option small {{form.visibility === item ? 'active' : ''}}"
+        data-value="{{item}}"
+        bindtap="chooseVisibility"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitPost">发布</button>
+</view>

@@ -1,0 +1,76 @@
+.page-title {
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.page-intro {
+  margin-top: 14rpx;
+  color: #625c53;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.target {
+  margin-top: 22rpx;
+  padding: 20rpx 22rpx;
+  color: #2f6655;
+  font-size: 26rpx;
+}
+
+.field-label {
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.option-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.option-row.wrap {
+  flex-wrap: wrap;
+}
+
+.option {
+  min-height: 66rpx;
+  padding: 16rpx 24rpx;
+  border: 1rpx solid #e1d5c6;
+  border-radius: 8rpx;
+  background: #fffdf8;
+  color: #625c53;
+  font-size: 28rpx;
+}
+
+.option.small {
+  min-height: 56rpx;
+  padding: 12rpx 18rpx;
+  font-size: 24rpx;
+}
+
+.option.active {
+  border-color: #2f6655;
+  background: #eff6f1;
+  color: #2f6655;
+  font-weight: 700;
+}
+
+.content-input {
+  width: 100%;
+  min-height: 320rpx;
+  padding: 24rpx;
+  color: #2f2a25;
+  font-size: 29rpx;
+  line-height: 1.6;
+}
+
+.input-count {
+  margin-top: 10rpx;
+  text-align: right;
+  color: #7c756c;
+  font-size: 24rpx;
+}
+
+.submit-button {
+  margin-top: 34rpx;
+}

@@ -1,0 +1,97 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  background: #2f6655;
+  color: #fffdf8;
+  font-size: 40rpx;
+  font-weight: 800;
+}
+
+.profile-main {
+  min-width: 0;
+}
+
+.nickname {
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.profile-note {
+  margin-top: 8rpx;
+  color: #7c756c;
+  font-size: 24rpx;
+}
+
+.joined-row,
+.my-post,
+.permission {
+  margin-bottom: 18rpx;
+  padding: 24rpx;
+}
+
+.joined-name {
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.joined-summary {
+  margin-top: 10rpx;
+  color: #625c53;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.post-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.post-type {
+  color: #2f6655;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.post-time {
+  color: #7c756c;
+  font-size: 24rpx;
+}
+
+.post-content {
+  margin-top: 14rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.permission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin-bottom: 18rpx;
+  font-size: 28rpx;
+}
+
+.permission-state {
+  color: #2f6655;
+  font-weight: 700;
+}
+
+.permission-desc {
+  color: #7c756c;
+  font-size: 24rpx;
+  line-height: 1.55;
+}

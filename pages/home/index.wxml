@@ -1,0 +1,59 @@
+<view class="page home-page">
+  <view class="hero card">
+    <view>
+      <view class="hero-title">失恋阵线联盟</view>
+      <view class="hero-subtitle">在阵线小队里慢慢说清楚，也让自己的 Agent 继续关心你。</view>
+    </view>
+    <view class="hero-actions">
+      <button class="primary-button hero-button" bindtap="openAgent">找 Agent 聊聊</button>
+    </view>
+  </view>
+
+  <view class="boundary">{{boundary}}</view>
+
+  <view wx:if="{{loading}}" class="empty">正在整理今天的小队动态...</view>
+
+  <block wx:else>
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">推荐阵线小队</text>
+        <text class="section-action">固定互助</text>
+      </view>
+      <view class="community-grid">
+        <view
+          wx:for="{{featuredCommunities}}"
+          wx:key="id"
+          class="community-card card"
+          data-id="{{item.id}}"
+          bindtap="openCommunity"
+        >
+          <view class="community-name">{{item.name}}</view>
+          <view class="community-summary">{{item.summary}}</view>
+          <view class="pill-row community-tags">
+            <text wx:for="{{item.tags}}" wx:key="*this" class="pill">{{item}}</text>
+          </view>
+          <view class="community-meta">{{item.memberCount}} 人 · 今日 {{item.activeToday}} 人在场</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">最新公开内容</text>
+        <text class="section-action">小队可见</text>
+      </view>
+      <view wx:if="{{feed.length === 0}}" class="empty card">还没有内容。你可以先发布一段今天的感受。</view>
+      <view wx:for="{{feed}}" wx:key="id" class="post-card card">
+        <view class="post-top">
+          <text class="post-type">{{item.typeText}}</text>
+          <text class="post-time">{{item.relativeTime}}</text>
+        </view>
+        <view class="post-content">{{item.content}}</view>
+        <view class="post-footer">
+          <text>{{item.authorName}} · {{item.emotion}}</text>
+          <text>{{item.commentCount}} 条回应</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

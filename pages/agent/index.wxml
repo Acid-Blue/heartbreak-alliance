@@ -1,0 +1,43 @@
+<view class="page agent-page">
+  <view class="agent-head card">
+    <view class="agent-title">个人 Agent</view>
+    <view class="agent-subtitle">会参考你的发言和阵线小队公开内容，帮你整理情绪线索。</view>
+    <view class="context-line">不读取私聊、通讯录或非公开内容。</view>
+  </view>
+
+  <view class="boundary">{{boundary}}</view>
+
+  <scroll-view
+    class="message-list"
+    scroll-y="true"
+    scroll-with-animation="true"
+    scroll-into-view="{{scrollIntoView}}"
+  >
+    <view wx:if="{{loading}}" class="empty">Agent 正在整理上下文...</view>
+    <view wx:else>
+      <view
+        wx:for="{{messages}}"
+        wx:key="id"
+        id="{{item.id}}"
+        class="message {{item.role === 'user' ? 'from-user' : 'from-agent'}}"
+      >
+        <view class="bubble card">
+          <view class="message-content">{{item.content}}</view>
+          <view class="message-meta">{{item.source}} · {{item.relativeTime}}</view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="composer card">
+    <input
+      class="composer-input"
+      value="{{inputValue}}"
+      placeholder="把此刻最强的念头写下来"
+      confirm-type="send"
+      bindinput="onInput"
+      bindconfirm="sendMessage"
+    />
+    <button class="send-button" loading="{{sending}}" bindtap="sendMessage">发送</button>
+  </view>
+</view>

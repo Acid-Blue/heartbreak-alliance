@@ -1,0 +1,61 @@
+.page-title {
+  font-size: 44rpx;
+  font-weight: 800;
+}
+
+.page-intro {
+  margin-top: 14rpx;
+  color: #625c53;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.community-list {
+  margin-top: 28rpx;
+}
+
+.community-row {
+  margin-bottom: 18rpx;
+  padding: 26rpx;
+}
+
+.row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.row-title {
+  min-width: 0;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.join-state {
+  flex: 0 0 auto;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #fff7df;
+  color: #8b6421;
+  font-size: 22rpx;
+}
+
+.join-state.joined {
+  background: #eff6f1;
+  color: #2f6655;
+}
+
+.row-summary {
+  margin: 14rpx 0 18rpx;
+  color: #625c53;
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.row-meta {
+  margin-top: 18rpx;
+  color: #7c756c;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
