@@ -74,6 +74,7 @@
 
 .composer-input {
   flex: 1;
+  min-width: 0;
   height: 68rpx;
   padding: 0 16rpx;
   font-size: 27rpx;

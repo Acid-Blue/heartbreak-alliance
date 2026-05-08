@@ -27,14 +27,18 @@
 
 .detail-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18rpx;
   margin-top: 26rpx;
 }
 
 .action-button {
+  width: 100%;
+  min-width: 0;
+  height: 86rpx;
   margin: 0;
-  padding: 0;
+  padding: 0 12rpx;
+  font-size: 27rpx;
 }
 
 .post-card {
