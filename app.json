@@ -5,6 +5,7 @@
     "pages/agent/index",
     "pages/profile/index",
     "pages/community/detail",
+    "pages/post/detail",
     "pages/publish/index"
   ],
   "window": {

@@ -1,0 +1,57 @@
+<view class="page post-detail-page">
+  <view wx:if="{{loading}}" class="empty">正在打开这条内容...</view>
+  <view wx:elif="{{error}}" class="empty card" bindtap="loadDetail">{{error}}</view>
+
+  <block wx:else>
+    <view class="post-head card">
+      <view class="post-top">
+        <text class="post-type">{{post.typeText}}</text>
+        <text class="post-time">{{post.relativeTime}}</text>
+      </view>
+      <view class="post-content">{{post.content}}</view>
+      <view class="post-footer">
+        <text>{{post.authorName}} · {{post.emotion}}</text>
+        <text>{{post.commentCount}} 条回应</text>
+      </view>
+      <view wx:if="{{community}}" class="community-link" bindtap="openCommunity">
+        {{community.name}} · {{post.visibility}}
+      </view>
+    </view>
+
+    <view class="boundary">{{boundary}}</view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">队友回应</text>
+        <text class="section-action">{{comments.length}} 条</text>
+      </view>
+      <view wx:if="{{comments.length === 0}}" class="empty card">还没有回应。你可以先留下一句具体的支持。</view>
+      <view wx:for="{{comments}}" wx:key="id" class="comment-row card">
+        <view class="comment-top">
+          <text class="comment-author">{{item.authorName}}</text>
+          <text class="comment-time">{{item.relativeTime}}</text>
+        </view>
+        <view class="comment-content">{{item.content}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">写回应</text>
+      </view>
+      <view class="comment-composer card">
+        <textarea
+          class="comment-input"
+          value="{{commentInput}}"
+          maxlength="300"
+          placeholder="写一句具体、克制、能被接住的回应"
+          bindinput="onCommentInput"
+        />
+        <view class="comment-actions">
+          <text class="input-count">{{commentInput.length}} / 300</text>
+          <button class="primary-button comment-button" loading="{{submitting}}" bindtap="submitComment">回应</button>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

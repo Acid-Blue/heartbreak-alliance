@@ -76,6 +76,13 @@ Page({
     });
   },
 
+  openPost(event) {
+    const { id } = event.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/post/detail?id=${id}`
+    });
+  },
+
   openAgent() {
     wx.switchTab({
       url: "/pages/agent/index"

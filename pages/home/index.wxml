@@ -44,7 +44,7 @@
         <text class="section-action">小队可见</text>
       </view>
       <view wx:if="{{feed.length === 0}}" class="empty card">还没有内容。你可以先发布一段今天的感受。</view>
-      <view wx:for="{{feed}}" wx:key="id" class="post-card card">
+      <view wx:for="{{feed}}" wx:key="id" class="post-card card" data-id="{{item.id}}" bindtap="openPost">
         <view class="post-top">
           <text class="post-type">{{item.typeText}}</text>
           <text class="post-time">{{item.relativeTime}}</text>

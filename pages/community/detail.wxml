@@ -22,7 +22,7 @@
         <text class="section-action">Agent 可参考</text>
       </view>
       <view wx:if="{{posts.length === 0}}" class="empty card">这个小队还没有内容，你可以成为第一个开口的人。</view>
-      <view wx:for="{{posts}}" wx:key="id" class="post-card card">
+      <view wx:for="{{posts}}" wx:key="id" class="post-card card" data-id="{{item.id}}" bindtap="openPost">
         <view class="post-top">
           <text class="post-type">{{item.typeText}}</text>
           <text class="post-time">{{item.relativeTime}}</text>

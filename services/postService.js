@@ -1,6 +1,7 @@
-const { posts } = require("./mockData");
+const { posts, comments } = require("./mockData");
 
 const createdPosts = [];
+const createdComments = [];
 
 const postTypes = [
   { value: "vent", label: "倾诉" },
@@ -24,16 +25,41 @@ function publicPosts() {
   return allPosts().filter((post) => post.visibility === PUBLIC_VISIBILITY);
 }
 
+function allComments() {
+  return createdComments.concat(comments);
+}
+
+function countComments(postId) {
+  return allComments().filter((comment) => comment.postId === postId).length;
+}
+
+function decoratePost(post) {
+  return {
+    ...post,
+    commentCount: countComments(post.id)
+  };
+}
+
 function getFeed() {
-  return Promise.resolve(clone(publicPosts()));
+  return Promise.resolve(clone(publicPosts().map(decoratePost)));
+}
+
+function getPost(id) {
+  const post = allPosts().find((item) => item.id === id) || null;
+  return Promise.resolve(clone(post ? decoratePost(post) : null));
 }
 
 function getPostsByCommunity(communityId) {
-  return Promise.resolve(clone(publicPosts().filter((post) => post.communityId === communityId)));
+  return Promise.resolve(clone(publicPosts().filter((post) => post.communityId === communityId).map(decoratePost)));
+}
+
+function getCommentsByPost(postId) {
+  const matchedComments = allComments().filter((comment) => comment.postId === postId);
+  return Promise.resolve(clone(matchedComments));
 }
 
 function getMyPosts() {
-  return Promise.resolve(clone(createdPosts.concat(posts.slice(0, 1))));
+  return Promise.resolve(clone(createdPosts.concat(posts.slice(0, 1)).map(decoratePost)));
 }
 
 function createPost(payload) {
@@ -53,7 +79,30 @@ function createPost(payload) {
   };
 
   createdPosts.unshift(post);
-  return Promise.resolve(clone(post));
+  return Promise.resolve(clone(decoratePost(post)));
+}
+
+function createComment(payload) {
+  const post = allPosts().find((item) => item.id === payload.postId);
+  const content = (payload.content || "").trim();
+
+  if (!post || !content) {
+    return Promise.reject(new Error("invalid comment payload"));
+  }
+
+  const comment = {
+    id: `comment-local-${Date.now()}`,
+    postId: payload.postId,
+    authorName: "匿名队友",
+    content,
+    createdAt: new Date().toISOString()
+  };
+
+  createdComments.unshift(comment);
+  return Promise.resolve(clone({
+    comment,
+    post: decoratePost(post)
+  }));
 }
 
 module.exports = {
@@ -61,7 +110,10 @@ module.exports = {
   emotionTags,
   visibilityOptions,
   getFeed,
+  getPost,
   getPostsByCommunity,
+  getCommentsByPost,
   getMyPosts,
-  createPost
+  createPost,
+  createComment
 };

@@ -1,0 +1,81 @@
+.post-head {
+  padding: 28rpx;
+}
+
+.post-top,
+.post-footer,
+.comment-top,
+.comment-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.post-type {
+  color: #2f6655;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.post-time,
+.post-footer,
+.comment-time,
+.input-count {
+  color: #7c756c;
+  font-size: 24rpx;
+}
+
+.post-content {
+  margin: 18rpx 0;
+  font-size: 32rpx;
+  line-height: 1.7;
+}
+
+.community-link {
+  margin-top: 22rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 8rpx;
+  background: #eff6f1;
+  color: #2f6655;
+  font-size: 25rpx;
+}
+
+.comment-row,
+.comment-composer {
+  margin-bottom: 18rpx;
+  padding: 24rpx;
+}
+
+.comment-author {
+  color: #2f2a25;
+  font-size: 27rpx;
+  font-weight: 700;
+}
+
+.comment-content {
+  margin-top: 14rpx;
+  color: #3b342d;
+  font-size: 28rpx;
+  line-height: 1.65;
+}
+
+.comment-input {
+  width: 100%;
+  min-height: 180rpx;
+  color: #2f2a25;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.comment-actions {
+  margin-top: 18rpx;
+}
+
+.comment-button {
+  width: 160rpx;
+  height: 72rpx;
+  margin: 0;
+  padding: 0;
+  font-size: 28rpx;
+}

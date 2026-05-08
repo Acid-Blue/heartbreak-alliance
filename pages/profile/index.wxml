@@ -35,7 +35,7 @@
         <text class="section-title">我的发布</text>
       </view>
       <view wx:if="{{myPosts.length === 0}}" class="empty card">还没有发布内容。</view>
-      <view wx:for="{{myPosts}}" wx:key="id" class="my-post card">
+      <view wx:for="{{myPosts}}" wx:key="id" class="my-post card" data-id="{{item.id}}" bindtap="openPost">
         <view class="post-top">
           <text class="post-type">{{item.typeText}}</text>
           <text class="post-time">{{item.relativeTime}}</text>

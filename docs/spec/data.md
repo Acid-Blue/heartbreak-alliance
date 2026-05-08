@@ -32,6 +32,14 @@
 - `commentCount`: 评论数
 - `visibility`: 可见范围
 
+### Comment
+
+- `id`: 回应 ID
+- `postId`: 所属帖子 ID
+- `authorName`: 作者昵称
+- `content`: 回应正文
+- `createdAt`: 创建时间
+
 ### AgentMessage
 
 - `id`: 消息 ID
@@ -48,8 +56,11 @@
 - `communityService.getFeaturedCommunities()`
 - `communityService.getCommunity(id)`
 - `postService.getFeed()`
+- `postService.getPost(id)`
 - `postService.getPostsByCommunity(communityId)`
+- `postService.getCommentsByPost(postId)`
 - `postService.createPost(payload)`
+- `postService.createComment(payload)`
 - `agentService.getAgentMessages()`
 - `agentService.sendAgentMessage(payload)`
 - `userService.getCurrentUser()`
@@ -59,6 +70,7 @@
 ## Routes
 
 - `pages/community/detail?id=<communityId>`
+- `pages/post/detail?id=<postId>`
 - `pages/publish/index?communityId=<communityId>`
 - `pages/agent/index?communityId=<communityId>`
 
