@@ -1,13 +1,14 @@
 const { agentMessages } = require("./mockData");
+const localStore = require("../utils/localStore");
 
-const localMessages = [];
+const LOCAL_MESSAGES_KEY = "heartbreakAlliance.agentMessages";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
 function getAgentMessages() {
-  return Promise.resolve(clone(agentMessages.concat(localMessages)));
+  return Promise.resolve(clone(agentMessages.concat(getLocalMessages())));
 }
 
 function sendAgentMessage(payload) {
@@ -27,8 +28,14 @@ function sendAgentMessage(payload) {
     createdAt: new Date().toISOString()
   };
 
-  localMessages.push(userMessage, reply);
+  const nextMessages = getLocalMessages().concat([userMessage, reply]);
+  localStore.write(LOCAL_MESSAGES_KEY, nextMessages);
+
   return Promise.resolve(clone({ userMessage, reply }));
+}
+
+function getLocalMessages() {
+  return localStore.readArray(LOCAL_MESSAGES_KEY);
 }
 
 function buildMockReply(content) {

@@ -1,7 +1,8 @@
 const { posts, comments } = require("./mockData");
+const localStore = require("../utils/localStore");
 
-const createdPosts = [];
-const createdComments = [];
+const CREATED_POSTS_KEY = "heartbreakAlliance.createdPosts";
+const CREATED_COMMENTS_KEY = "heartbreakAlliance.createdComments";
 
 const postTypes = [
   { value: "vent", label: "倾诉" },
@@ -18,7 +19,7 @@ function clone(value) {
 }
 
 function allPosts() {
-  return createdPosts.concat(posts);
+  return getCreatedPosts().concat(posts);
 }
 
 function publicPosts() {
@@ -26,7 +27,23 @@ function publicPosts() {
 }
 
 function allComments() {
-  return createdComments.concat(comments);
+  return getCreatedComments().concat(comments);
+}
+
+function getCreatedPosts() {
+  return localStore.readArray(CREATED_POSTS_KEY);
+}
+
+function saveCreatedPosts(nextPosts) {
+  localStore.write(CREATED_POSTS_KEY, nextPosts);
+}
+
+function getCreatedComments() {
+  return localStore.readArray(CREATED_COMMENTS_KEY);
+}
+
+function saveCreatedComments(nextComments) {
+  localStore.write(CREATED_COMMENTS_KEY, nextComments);
 }
 
 function countComments(postId) {
@@ -59,7 +76,7 @@ function getCommentsByPost(postId) {
 }
 
 function getMyPosts() {
-  return Promise.resolve(clone(createdPosts.concat(posts.slice(0, 1)).map(decoratePost)));
+  return Promise.resolve(clone(getCreatedPosts().concat(posts.slice(0, 1)).map(decoratePost)));
 }
 
 function createPost(payload) {
@@ -78,7 +95,10 @@ function createPost(payload) {
     visibility
   };
 
-  createdPosts.unshift(post);
+  const nextPosts = getCreatedPosts();
+  nextPosts.unshift(post);
+  saveCreatedPosts(nextPosts);
+
   return Promise.resolve(clone(decoratePost(post)));
 }
 
@@ -98,7 +118,10 @@ function createComment(payload) {
     createdAt: new Date().toISOString()
   };
 
-  createdComments.unshift(comment);
+  const nextComments = getCreatedComments();
+  nextComments.unshift(comment);
+  saveCreatedComments(nextComments);
+
   return Promise.resolve(clone({
     comment,
     post: decoratePost(post)

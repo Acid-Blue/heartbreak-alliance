@@ -50,7 +50,7 @@
 
 ## Services
 
-所有服务首版返回 Promise，数据来源为本地 mock。
+所有服务首版返回 Promise。初始数据来源为本地 mock，用户在本机创建的帖子、回应和 Agent 对话通过 `wxStorage` 持久化。
 
 - `communityService.getCommunities()`
 - `communityService.getFeaturedCommunities()`
@@ -76,4 +76,4 @@
 
 ## Cloud Boundary
 
-后续接入云开发时，应优先替换 services 内部实现，页面层不直接调用 `wx.cloud.database()` 或云函数。
+后续接入云开发时，应优先替换 services 内部实现，页面层不直接调用 `wx.cloud.database()`、云函数或存储实现。
