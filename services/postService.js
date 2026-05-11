@@ -147,27 +147,33 @@ function createPost(payload) {
 }
 
 function createComment(payload) {
-  const post = allPosts().find((item) => item.id === payload.postId);
+  const postId = payload.postId;
   const content = (payload.content || "").trim();
 
-  if (!post || !content) {
+  if (!postId || !content) {
     return Promise.reject(new Error("invalid comment payload"));
   }
 
   const comment = {
     id: createLocalId("comment-local"),
-    postId: payload.postId,
+    postId,
     authorName: "匿名队友",
     content,
     createdAt: new Date().toISOString()
   };
 
   return cloudApi.callData("createComment", { comment }).then((cloudComment) => {
-    return getPost(payload.postId).then((nextPost) => clone({
+    return getPost(postId).then((nextPost) => clone({
       comment: cloudComment,
-      post: nextPost || decoratePost(post)
+      post: nextPost
     }));
   }).catch(() => {
+    const post = allPosts().find((item) => item.id === postId);
+
+    if (!post) {
+      return Promise.reject(new Error("post unavailable offline"));
+    }
+
     const nextComments = getCreatedComments();
     nextComments.unshift(comment);
     saveCreatedComments(nextComments);
