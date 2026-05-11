@@ -65,12 +65,14 @@ function createChatCompletion({ apiKey, baseUrl, model, content, context }) {
     throw new Error("OPENAI_BASE_URL must start with https://");
   }
 
-  const body = JSON.stringify({
+  const payload = {
     model,
     messages: buildMessages(content, context),
-    max_tokens: Number(process.env.OPENAI_MAX_TOKENS || DEFAULT_MAX_TOKENS),
     temperature: Number(process.env.OPENAI_TEMPERATURE || DEFAULT_TEMPERATURE)
-  });
+  };
+  payload[getMaxTokensParamName({ baseUrl, model })] = Number(process.env.OPENAI_MAX_TOKENS || DEFAULT_MAX_TOKENS);
+
+  const body = JSON.stringify(payload);
 
   return requestJson({
     hostname: endpoint.hostname,
@@ -82,6 +84,17 @@ function createChatCompletion({ apiKey, baseUrl, model, content, context }) {
       "Content-Length": Buffer.byteLength(body)
     }
   }, body, Number(process.env.OPENAI_REQUEST_TIMEOUT_MS || DEFAULT_REQUEST_TIMEOUT_MS));
+}
+
+function getMaxTokensParamName({ baseUrl, model }) {
+  const normalizedBaseUrl = String(baseUrl || "").toLowerCase();
+  const normalizedModel = String(model || "").toLowerCase();
+
+  if (normalizedBaseUrl.includes("moonshot") || normalizedModel.startsWith("kimi-")) {
+    return "max_completion_tokens";
+  }
+
+  return "max_tokens";
 }
 
 function buildSystemPrompt() {

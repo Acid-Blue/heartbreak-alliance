@@ -23,7 +23,7 @@
    - `OPENAI_API_KEY`：OpenAI-compatible API Key。
    - `OPENAI_BASE_URL`：可选，默认 `https://api.openai.com/v1`。接 Kimi 时填写 `https://api.moonshot.cn/v1`。
    - `OPENAI_MODEL`：可选，默认 `gpt-5`。接 Kimi 时填写实际可用模型，例如 `kimi-k2.6`。
-   - `OPENAI_MAX_TOKENS`：可选，默认 `1200`。如果日志出现 `finishReason: length`，可调到 `2000` 或 `3000`。
+   - `OPENAI_MAX_TOKENS`：可选，默认 `1200`。如果日志出现 `finishReason: length`，可调到 `2000` 或 `3000`。接 Kimi / Moonshot 时，云函数会把它作为 `max_completion_tokens` 传给接口。
    - `OPENAI_TEMPERATURE`：可选，默认 `1`。`kimi-k2.6` 只允许 `1`。
    - `OPENAI_REQUEST_TIMEOUT_MS`：可选，默认 `55000`。必须小于云函数超时时间。
 5. 创建或授权以下云数据库集合：
