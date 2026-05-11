@@ -1,4 +1,5 @@
 const { posts, comments } = require("./mockData");
+const { createLocalId } = require("../utils/id");
 const localStore = require("../utils/localStore");
 
 const CREATED_POSTS_KEY = "heartbreakAlliance.createdPosts";
@@ -83,7 +84,7 @@ function createPost(payload) {
   const selectedType = postTypes.find((item) => item.value === payload.type) || postTypes[0];
   const visibility = visibilityOptions.includes(payload.visibility) ? payload.visibility : PUBLIC_VISIBILITY;
   const post = {
-    id: `post-local-${Date.now()}`,
+    id: createLocalId("post-local"),
     communityId: payload.communityId,
     authorName: "匿名队友",
     type: selectedType.value,
@@ -111,7 +112,7 @@ function createComment(payload) {
   }
 
   const comment = {
-    id: `comment-local-${Date.now()}`,
+    id: createLocalId("comment-local"),
     postId: payload.postId,
     authorName: "匿名队友",
     content,

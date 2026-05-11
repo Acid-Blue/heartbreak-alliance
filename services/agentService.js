@@ -1,4 +1,5 @@
 const { agentMessages } = require("./mockData");
+const { createLocalId } = require("../utils/id");
 const localStore = require("../utils/localStore");
 
 const LOCAL_MESSAGES_KEY = "heartbreakAlliance.agentMessages";
@@ -13,7 +14,7 @@ function getAgentMessages() {
 
 function sendAgentMessage(payload) {
   const userMessage = {
-    id: `msg-user-${Date.now()}`,
+    id: createLocalId("msg-user"),
     role: "user",
     content: payload.content,
     source: "用户输入",
@@ -21,7 +22,7 @@ function sendAgentMessage(payload) {
   };
 
   const reply = {
-    id: `msg-agent-${Date.now() + 1}`,
+    id: createLocalId("msg-agent"),
     role: "agent",
     content: buildMockReply(payload.content),
     source: "基于本人内容和小队公开内容",
