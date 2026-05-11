@@ -2,6 +2,7 @@ const { agentMessages } = require("./mockData");
 const { createLocalId } = require("../utils/id");
 const localStore = require("../utils/localStore");
 const postService = require("./postService");
+const { detectSafetyRisk } = require("./safetyService");
 const userService = require("./userService");
 
 const LOCAL_MESSAGES_KEY = "heartbreakAlliance.agentMessages";
@@ -26,11 +27,12 @@ function sendAgentMessage(payload) {
   };
 
   return buildAgentContext().then((context) => {
+    const safety = detectSafetyRisk(content);
     const reply = {
       id: createLocalId("msg-agent"),
       role: "agent",
-      content: buildMockReply(content, context),
-      source: context.sourceText,
+      content: safety.hasRisk ? buildSafetyReply(content, safety) : buildMockReply(content, context),
+      source: safety.hasRisk ? "安全提醒" : context.sourceText,
       createdAt: new Date().toISOString()
     };
 
@@ -108,6 +110,12 @@ function buildMockReply(content, context) {
     : "你现在没有开启更多上下文参考，我会只基于这次输入回应。";
 
   return `我先接住你说的“${focus}”。${contextHint}这听起来不是小事，也不需要立刻被解决。你可以先写下：这个念头最强烈的时候，你真正想得到的是回应、解释，还是一个确定的结束？`;
+}
+
+function buildSafetyReply(content, safety) {
+  const trimmed = (content || "").trim();
+  const focus = trimmed.length > 18 ? `${trimmed.slice(0, 18)}...` : trimmed || "这件事";
+  return `我先接住你说的“${focus}”。这条内容里有需要优先处理的安全信号。${safety.notice}如果可以，现在先离开可能伤害自己的物品或场景，去到有人能看见你的地方，并把这句话发给一个现实中可信赖的人。`;
 }
 
 module.exports = {

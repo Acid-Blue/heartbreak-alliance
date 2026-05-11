@@ -12,6 +12,11 @@
     <view class="safety-content">请先联系身边可信赖的人，或立即联系当地紧急救助渠道。这里提供情绪支持，不能替代紧急救助。</view>
   </view>
 
+  <view wx:if="{{safetyNotice}}" class="risk-card card">
+    <view class="risk-title">先处理安全，不要独自硬撑</view>
+    <view class="risk-content">{{safetyNotice}}</view>
+  </view>
+
   <view class="section">
     <view class="section-header">
       <text class="section-title">现在最强的是哪一种？</text>
@@ -47,6 +52,7 @@
   <view wx:if="{{savedRecord}}" class="saved-card card">
     <view class="saved-title">已经先存下</view>
     <view class="saved-content">这次是「{{savedRecord.reasonText}}」。接下来 10 分钟先不要发消息，按下面的缓冲步骤走一遍。</view>
+    <view wx:if="{{savedRecord.hasSafetyRisk}}" class="saved-risk">这条记录已标记为需要优先处理安全，请先联系现实中的可信赖支持或紧急救助渠道。</view>
   </view>
 
   <view class="section">

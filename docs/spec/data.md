@@ -59,6 +59,8 @@
 - `draft`: 用户先存下、不发送的内容
 - `createdAt`: 创建时间
 - `delayMinutes`: 建议延迟决策分钟数
+- `hasSafetyRisk`: 是否命中安全提醒
+- `safetyNotice`: 安全提醒文案
 
 ## Services
 
@@ -76,6 +78,7 @@
 - `postService.createComment(payload)`
 - `supportService.getUrgeRecords()`
 - `supportService.createUrgeRecord(payload)`
+- `supportService.detectSafetyRisk(value, reason)`
 - `agentService.getAgentMessages()`
 - `agentService.buildAgentContext()`
 - `agentService.sendAgentMessage(payload)`

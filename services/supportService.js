@@ -1,4 +1,5 @@
 const { createLocalId } = require("../utils/id");
+const { detectSafetyRisk } = require("./safetyService");
 const localStore = require("../utils/localStore");
 
 const URGE_RECORDS_KEY = "heartbreakAlliance.urgeRecords";
@@ -28,6 +29,7 @@ function getUrgeRecords() {
 function createUrgeRecord(payload) {
   const reason = urgeReasons.find((item) => item.value === payload.reason) || urgeReasons[0];
   const draft = (payload.draft || "").trim();
+  const safety = detectSafetyRisk(draft, reason.value);
 
   if (!draft) {
     return Promise.reject(new Error("empty urge draft"));
@@ -39,7 +41,9 @@ function createUrgeRecord(payload) {
     reasonText: reason.label,
     draft,
     createdAt: new Date().toISOString(),
-    delayMinutes: 10
+    delayMinutes: 10,
+    hasSafetyRisk: safety.hasRisk,
+    safetyNotice: safety.notice
   };
 
   const nextRecords = localStore.readArray(URGE_RECORDS_KEY);
@@ -52,6 +56,7 @@ function createUrgeRecord(payload) {
 module.exports = {
   urgeReasons,
   bufferSteps,
+  detectSafetyRisk,
   getUrgeRecords,
   createUrgeRecord
 };

@@ -7,6 +7,7 @@ Page({
     selectedReason: "contact",
     selectedPrompt: supportService.urgeReasons[0].prompt,
     draft: "",
+    safetyNotice: "",
     savedRecord: null,
     recordCount: 0,
     submitting: false,
@@ -31,14 +32,21 @@ Page({
 
     this.setData({
       selectedReason: selected.value,
-      selectedPrompt: selected.prompt
+      selectedPrompt: selected.prompt,
+      safetyNotice: this.getSafetyNotice(this.data.draft, selected.value)
     });
   },
 
   onDraftInput(event) {
+    const draft = event.detail.value;
     this.setData({
-      draft: event.detail.value
+      draft,
+      safetyNotice: this.getSafetyNotice(draft, this.data.selectedReason)
     });
+  },
+
+  getSafetyNotice(draft, reason) {
+    return supportService.detectSafetyRisk(draft, reason).notice;
   },
 
   saveUrge() {
@@ -65,6 +73,7 @@ Page({
       this.setData({
         savedRecord: record,
         draft: "",
+        safetyNotice: this.getSafetyNotice("", this.data.selectedReason),
         submitting: false,
         recordCount: this.data.recordCount + 1
       });

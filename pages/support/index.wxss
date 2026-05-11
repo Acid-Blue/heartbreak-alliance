@@ -44,6 +44,26 @@
   line-height: 1.55;
 }
 
+.risk-card {
+  margin-top: 18rpx;
+  padding: 24rpx;
+  border-color: #c44c3a;
+  background: #fff0ed;
+}
+
+.risk-title {
+  color: #9b2f24;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.risk-content {
+  margin-top: 10rpx;
+  color: #5f2d27;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
 .reason-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -95,6 +115,16 @@
   color: #4d6258;
   font-size: 25rpx;
   line-height: 1.55;
+}
+
+.saved-risk {
+  margin-top: 14rpx;
+  padding: 16rpx;
+  border-radius: 6rpx;
+  background: #fff0ed;
+  color: #9b2f24;
+  font-size: 24rpx;
+  line-height: 1.5;
 }
 
 .step-list {
