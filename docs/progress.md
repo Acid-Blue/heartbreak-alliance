@@ -6,7 +6,7 @@
 
 当前仓库已经实现一个可运行的微信原生小程序 MVP，数据来源为本地 mock 和本机存储。核心产品框架已落地：首页、互助会、小队详情、帖子详情、发布、Agent、我的页面均已在 `app.json` 注册，并通过 `services/` 下的服务层提供数据。
 
-云持久化与 AI 推理边界已接入，配置说明见 `docs/cloud-ai-setup.md`。配置微信云环境后，用户生成数据会优先写入云数据库；配置 `OPENAI_API_KEY` 后，Agent 可通过云函数调用 OpenAI Responses API。未配置云环境或云函数失败时，仍回退到本地 mock / `wxStorage`，保证本地开发可用。
+云持久化与 AI 推理边界已接入，配置说明见 `docs/cloud-ai-setup.md`。配置微信云环境后，用户生成数据会优先写入云数据库；配置 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_MODEL` 后，Agent 可通过云函数调用 OpenAI-compatible Chat Completions API。未配置云环境或云函数失败时，仍回退到本地 mock / `wxStorage`，保证本地开发可用。
 
 第一阶段 MVP 验收已完成，冒烟测试计划见 `docs/test-plan.md`。本轮已完成源码级检查、服务层冒烟验证和微信开发者工具人工冒烟测试。
 
@@ -29,7 +29,7 @@
 ## 部分实现
 
 - Agent 上下文已接入本人发布、本人回应和所在小队公开内容摘要，但仍是 mock 回复，不是真实 AI 推理。
-- Agent 已接入云函数 AI 推理边界；真实推理依赖云函数环境变量 `OPENAI_API_KEY`，未配置时仍回退到 mock 回复。
+- Agent 已接入云函数 AI 推理边界；真实推理依赖云函数环境变量 `OPENAI_API_KEY`，endpoint 由 `OPENAI_BASE_URL` 控制，未配置时仍回退到 mock 回复。
 - 急性期支持已有静态安全提醒、冲动缓冲流程和保守关键词安全提醒，但尚未做深夜模式、紧急联系人或完整安全策略。
 - 联系决策已支持基础决策辅助，但尚未支持完整关系复盘、断联计划或连续行动计划。
 - 可见范围会影响本地新建帖子的公开流展示，但还没有服务端隐私模型或内容治理流程。
@@ -58,4 +58,4 @@
 
 联系决策增量已执行源码级检查和服务层冒烟检查。新增的 `pages/review/index`、首页入口和急性期支持入口尚未在微信开发者工具中人工回归。
 
-云持久化与 AI 推理增量已执行源码级检查和本地 fallback 服务层冒烟检查。由于当前 `app.js` 尚未配置真实 `CLOUD_ENV_ID`，云数据库写入和 OpenAI 请求尚未在微信云开发环境中实测。
+云持久化与 AI 推理增量已执行源码级检查和本地 fallback 服务层冒烟检查。由于当前 `app.js` 尚未配置真实 `CLOUD_ENV_ID`，云数据库写入和 OpenAI-compatible API 请求尚未在微信云开发环境中实测。

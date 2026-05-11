@@ -54,7 +54,7 @@ Agent 回复不应：
 
 当前 mock 版本已加入保守关键词识别。命中高风险表达时，Agent 回复来源显示为“安全提醒”，并优先提示用户联系现实中的可信赖支持或紧急救助渠道。该能力只用于安全提醒，不做诊断、分级评估或自动干预。
 
-配置云环境和 `OPENAI_API_KEY` 后，Agent 可通过 `cloudfunctions/aiAgent` 调用服务端 AI 推理。若未配置云环境、未配置 API Key 或云函数失败，Agent 回退到本地 mock 回复。
+配置云环境和 `OPENAI_API_KEY` 后，Agent 可通过 `cloudfunctions/aiAgent` 调用服务端 AI 推理。`OPENAI_BASE_URL` 用于切换 OpenAI-compatible endpoint，例如 Kimi / Moonshot；若未配置云环境、未配置 API Key 或云函数失败，Agent 回退到本地 mock 回复。
 
 ## Mock Reply Pattern
 

@@ -5,6 +5,7 @@ cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 });
 
+const DEFAULT_BASE_URL = "https://api.openai.com/v1";
 const DEFAULT_MODEL = "gpt-5";
 
 exports.main = async (event) => {
@@ -20,8 +21,9 @@ exports.main = async (event) => {
   try {
     const content = String(event.content || "").trim();
     const context = event.context || {};
-    const response = await createResponse({
+    const response = await createChatCompletion({
       apiKey,
+      baseUrl: process.env.OPENAI_BASE_URL || DEFAULT_BASE_URL,
       model: process.env.OPENAI_MODEL || DEFAULT_MODEL,
       content,
       context
@@ -30,7 +32,7 @@ exports.main = async (event) => {
     return {
       ok: true,
       data: {
-        content: extractOutputText(response),
+        content: extractAssistantContent(response),
         responseId: response.id || "",
         model: response.model || process.env.OPENAI_MODEL || DEFAULT_MODEL
       }
@@ -43,17 +45,17 @@ exports.main = async (event) => {
   }
 };
 
-function createResponse({ apiKey, model, content, context }) {
+function createChatCompletion({ apiKey, baseUrl, model, content, context }) {
+  const endpoint = new URL(`${baseUrl.replace(/\/$/, "")}/chat/completions`);
   const body = JSON.stringify({
     model,
-    instructions: buildInstructions(),
-    input: buildInput(content, context),
-    max_output_tokens: 420
+    messages: buildMessages(content, context),
+    max_completion_tokens: 420
   });
 
   return requestJson({
-    hostname: "api.openai.com",
-    path: "/v1/responses",
+    hostname: endpoint.hostname,
+    path: `${endpoint.pathname}${endpoint.search}`,
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
@@ -63,7 +65,7 @@ function createResponse({ apiKey, model, content, context }) {
   }, body);
 }
 
-function buildInstructions() {
+function buildSystemPrompt() {
   return [
     "你是「失恋阵线联盟」里的陪伴型个人 Agent。",
     "你不是医生、心理咨询师或危机干预人员，不做诊断，不承诺疗效或复合结果。",
@@ -73,21 +75,20 @@ function buildInstructions() {
   ].join("\n");
 }
 
-function buildInput(content, context) {
+function buildMessages(content, context) {
   return [
+    {
+      role: "system",
+      content: buildSystemPrompt()
+    },
     {
       role: "user",
       content: [
-        {
-          type: "input_text",
-          text: [
-            `用户本次输入：${content}`,
-            "",
-            "可参考上下文摘要：",
-            formatContext(context)
-          ].join("\n")
-        }
-      ]
+        `用户本次输入：${content}`,
+        "",
+        "可参考上下文摘要：",
+        formatContext(context)
+      ].join("\n")
     }
   ];
 }
@@ -135,7 +136,7 @@ function requestJson(options, body) {
         try {
           const parsed = raw ? JSON.parse(raw) : {};
           if (response.statusCode < 200 || response.statusCode >= 300) {
-            reject(new Error(parsed.error && parsed.error.message ? parsed.error.message : `OpenAI request failed: ${response.statusCode}`));
+            reject(new Error(parsed.error && parsed.error.message ? parsed.error.message : `Kimi request failed: ${response.statusCode}`));
             return;
           }
           resolve(parsed);
@@ -151,22 +152,11 @@ function requestJson(options, body) {
   });
 }
 
-function extractOutputText(response) {
-  if (response.output_text) {
-    return response.output_text;
-  }
-
-  const output = Array.isArray(response.output) ? response.output : [];
-  const chunks = [];
-
-  output.forEach((item) => {
-    const content = Array.isArray(item.content) ? item.content : [];
-    content.forEach((part) => {
-      if (part.text) {
-        chunks.push(part.text);
-      }
-    });
-  });
-
-  return chunks.join("").trim();
+function extractAssistantContent(response) {
+  const choice = response
+    && Array.isArray(response.choices)
+    && response.choices[0];
+  return choice && choice.message && choice.message.content
+    ? choice.message.content.trim()
+    : "";
 }
