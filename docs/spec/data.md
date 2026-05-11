@@ -62,6 +62,20 @@
 - `hasSafetyRisk`: 是否命中安全提醒
 - `safetyNotice`: 安全提醒文案
 
+### ReviewRecord
+
+- `id`: 复盘记录 ID
+- `intent`: 联系目的
+- `intentText`: 联系目的文案
+- `wait`: 已等待时长
+- `waitText`: 已等待时长文案
+- `urgeLevel`: 冲动强度，1-5
+- `hasPracticalReason`: 是否有现实事务必要性
+- `draft`: 想联系 TA 的草稿
+- `decision`: 决策辅助结果
+- `hasSafetyRisk`: 是否命中安全提醒
+- `createdAt`: 创建时间
+
 ## Services
 
 所有服务首版返回 Promise。初始数据来源为本地 mock，用户在本机创建的帖子、回应和 Agent 对话通过 `wxStorage` 持久化。
@@ -79,6 +93,8 @@
 - `supportService.getUrgeRecords()`
 - `supportService.createUrgeRecord(payload)`
 - `supportService.detectSafetyRisk(value, reason)`
+- `reviewService.getReviewRecords()`
+- `reviewService.createContactDecision(payload)`
 - `agentService.getAgentMessages()`
 - `agentService.buildAgentContext()`
 - `agentService.sendAgentMessage(payload)`

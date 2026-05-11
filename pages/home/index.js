@@ -77,6 +77,12 @@ Page({
     });
   },
 
+  openReview() {
+    wx.navigateTo({
+      url: "/pages/review/index"
+    });
+  },
+
   openPublish(event) {
     const { id } = event.currentTarget.dataset;
     wx.navigateTo({

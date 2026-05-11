@@ -2,6 +2,7 @@
   "pages": [
     "pages/home/index",
     "pages/support/index",
+    "pages/review/index",
     "pages/community/index",
     "pages/agent/index",
     "pages/profile/index",

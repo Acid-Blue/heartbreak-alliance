@@ -1,0 +1,99 @@
+<view class="page review-page">
+  <view class="review-hero card">
+    <view class="eyebrow">关系复盘</view>
+    <view class="review-title">要不要联系 TA？</view>
+    <view class="review-subtitle">先不要急着发出去。把目的、冲动强度和现实必要性拆开看，再决定下一步。</view>
+  </view>
+
+  <view class="boundary">{{boundary}}</view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">这次最接近哪种目的？</text>
+    </view>
+    <view class="option-grid">
+      <view
+        wx:for="{{intents}}"
+        wx:key="value"
+        class="option-card card {{form.intent === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="chooseIntent"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">现在的冲动强度</text>
+      <text class="section-action">{{form.urgeLevel}} / 5</text>
+    </view>
+    <view class="level-row">
+      <view
+        wx:for="{{urgeLevels}}"
+        wx:key="*this"
+        class="level-dot {{form.urgeLevel === item ? 'active' : ''}}"
+        data-value="{{item}}"
+        bindtap="chooseUrgeLevel"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="field-card card">
+      <view>
+        <view class="field-title">有现实事务必须处理吗？</view>
+        <view class="field-desc">例如物品、账单、工作交接、共同事务。单纯想确认爱不爱，不算现实必要。</view>
+      </view>
+      <switch checked="{{form.hasPracticalReason}}" color="#2F6655" bindchange="onPracticalChange" />
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">你已经等了多久？</text>
+    </view>
+    <view class="option-grid">
+      <view
+        wx:for="{{waitOptions}}"
+        wx:key="value"
+        class="option-card card {{form.wait === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="chooseWait"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">把想发的话先写成草稿</text>
+      <text class="section-action">{{form.draft.length}} / 500</text>
+    </view>
+    <textarea
+      class="draft-input card"
+      value="{{form.draft}}"
+      maxlength="500"
+      placeholder="例如：我想问你为什么突然变冷淡，还是我只是想让你知道我现在很难受？"
+      bindinput="onDraftInput"
+    />
+    <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitDecision">先帮我判断一下</button>
+  </view>
+
+  <view wx:if="{{result}}" class="result-card card {{result.decision.level}}">
+    <view class="result-kicker">已记录 {{recordCount}} 次复盘</view>
+    <view class="result-title">{{result.decision.title}}</view>
+    <view class="result-summary">{{result.decision.summary}}</view>
+    <view class="result-next">下一步：{{result.decision.nextStep}}</view>
+    <view class="result-meta">目的：{{result.intentText}} · 冲动 {{result.urgeLevel}} / 5 · {{result.waitText}}</view>
+  </view>
+
+  <view class="review-actions">
+    <button class="secondary-button" bindtap="openSupport">先撑 10 分钟</button>
+    <button class="secondary-button" bindtap="openAgent">找 Agent 继续复盘</button>
+  </view>
+</view>

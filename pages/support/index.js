@@ -98,6 +98,12 @@ Page({
     });
   },
 
+  openReview() {
+    wx.navigateTo({
+      url: "/pages/review/index"
+    });
+  },
+
   openPublish() {
     wx.navigateTo({
       url: "/pages/publish/index?communityId=squad-001"
