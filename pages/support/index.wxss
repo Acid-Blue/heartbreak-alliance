@@ -1,0 +1,136 @@
+.support-hero {
+  padding: 34rpx;
+  background: linear-gradient(135deg, #fffdf8 0%, #fff1dc 100%);
+}
+
+.eyebrow {
+  color: #b56b35;
+  font-size: 24rpx;
+  font-weight: 800;
+  letter-spacing: 2rpx;
+}
+
+.support-title {
+  margin-top: 10rpx;
+  font-size: 46rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.support-subtitle {
+  margin-top: 16rpx;
+  color: #625c53;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.safety-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-color: #e5b3a0;
+  background: #fff4ef;
+}
+
+.safety-title {
+  color: #9b3f2f;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.safety-content {
+  margin-top: 10rpx;
+  color: #6b4338;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.reason-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.reason-card {
+  padding: 24rpx 18rpx;
+  color: #625c53;
+  font-size: 28rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+.reason-card.active {
+  border-color: #2f6655;
+  background: #eff6f1;
+  color: #2f6655;
+}
+
+.urge-input {
+  width: 100%;
+  min-height: 260rpx;
+  padding: 24rpx;
+  color: #2f2a25;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.save-button {
+  margin-top: 18rpx;
+}
+
+.saved-card {
+  margin-top: 22rpx;
+  padding: 24rpx;
+  border-color: #cce1d5;
+  background: #eff6f1;
+}
+
+.saved-title {
+  color: #2f6655;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.saved-content {
+  margin-top: 10rpx;
+  color: #4d6258;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.step-list {
+  display: grid;
+  gap: 16rpx;
+}
+
+.step-row {
+  display: flex;
+  gap: 18rpx;
+  padding: 22rpx;
+}
+
+.step-index {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 50%;
+  background: #2f6655;
+  color: #fffdf8;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.step-content {
+  flex: 1;
+  color: #3c362f;
+  font-size: 27rpx;
+  line-height: 1.55;
+}
+
+.support-actions {
+  display: grid;
+  gap: 16rpx;
+  margin-top: 28rpx;
+}

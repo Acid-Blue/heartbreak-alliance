@@ -3,6 +3,7 @@
     <view class="agent-title">个人 Agent</view>
     <view class="agent-subtitle">{{contextSummary}}</view>
     <view class="context-line">不读取私聊、通讯录或非公开内容。</view>
+    <button class="support-link" bindtap="openSupport">我怕自己会冲动，先撑 10 分钟</button>
   </view>
 
   <view class="boundary">{{boundary}}</view>

@@ -114,6 +114,12 @@ Page({
     });
   },
 
+  openSupport() {
+    wx.navigateTo({
+      url: "/pages/support/index"
+    });
+  },
+
   scrollToBottom() {
     const last = this.data.messages[this.data.messages.length - 1];
     if (last) {

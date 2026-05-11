@@ -71,6 +71,12 @@ Page({
     });
   },
 
+  openSupport() {
+    wx.navigateTo({
+      url: "/pages/support/index"
+    });
+  },
+
   openPublish(event) {
     const { id } = event.currentTarget.dataset;
     wx.navigateTo({

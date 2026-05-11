@@ -5,6 +5,7 @@
       <view class="hero-subtitle">在阵线小队里慢慢说清楚，也让自己的 Agent 继续关心你。</view>
     </view>
     <view class="hero-actions">
+      <button class="urgent-button hero-button" bindtap="openSupport">我现在很难受</button>
       <button class="primary-button hero-button" bindtap="openAgent">找 Agent 聊聊</button>
     </view>
   </view>

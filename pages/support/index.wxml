@@ -1,0 +1,69 @@
+<view class="page support-page">
+  <view class="support-hero card">
+    <view class="eyebrow">急性期支持</view>
+    <view class="support-title">先撑过这 10 分钟</view>
+    <view class="support-subtitle">现在不需要做决定。先把冲动放到这里，让身体和脑子都慢一点。</view>
+  </view>
+
+  <view class="boundary">{{boundary}}</view>
+
+  <view class="safety-card card">
+    <view class="safety-title">如果你担心自己或他人的安全</view>
+    <view class="safety-content">请先联系身边可信赖的人，或立即联系当地紧急救助渠道。这里提供情绪支持，不能替代紧急救助。</view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">现在最强的是哪一种？</text>
+    </view>
+    <view class="reason-grid">
+      <view
+        wx:for="{{reasons}}"
+        wx:key="value"
+        class="reason-card card {{selectedReason === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="chooseReason"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">先写下来，不发送</text>
+      <text class="section-action">{{draft.length}} / 500</text>
+    </view>
+    <textarea
+      class="urge-input card"
+      value="{{draft}}"
+      maxlength="500"
+      placeholder="{{selectedPrompt}}"
+      bindinput="onDraftInput"
+    />
+    <button class="primary-button save-button" loading="{{submitting}}" bindtap="saveUrge">先存下，10 分钟后再决定</button>
+  </view>
+
+  <view wx:if="{{savedRecord}}" class="saved-card card">
+    <view class="saved-title">已经先存下</view>
+    <view class="saved-content">这次是「{{savedRecord.reasonText}}」。接下来 10 分钟先不要发消息，按下面的缓冲步骤走一遍。</view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">10 分钟缓冲步骤</text>
+      <text class="section-action">已记录 {{recordCount}} 次</text>
+    </view>
+    <view class="step-list">
+      <view wx:for="{{bufferSteps}}" wx:key="*this" class="step-row card">
+        <view class="step-index">{{index + 1}}</view>
+        <view class="step-content">{{item}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="support-actions">
+    <button class="primary-button" bindtap="openAgent">找 Agent 陪我说完整</button>
+    <button class="secondary-button" bindtap="openPublish">发到阵线小队</button>
+  </view>
+</view>

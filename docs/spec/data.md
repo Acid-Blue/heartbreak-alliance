@@ -51,6 +51,15 @@
 - `source`: 消息来源说明
 - `createdAt`: 创建时间
 
+### UrgeRecord
+
+- `id`: 冲动缓冲记录 ID
+- `reason`: 冲动类型
+- `reasonText`: 冲动类型文案
+- `draft`: 用户先存下、不发送的内容
+- `createdAt`: 创建时间
+- `delayMinutes`: 建议延迟决策分钟数
+
 ## Services
 
 所有服务首版返回 Promise。初始数据来源为本地 mock，用户在本机创建的帖子、回应和 Agent 对话通过 `wxStorage` 持久化。
@@ -65,6 +74,8 @@
 - `postService.getMyComments()`
 - `postService.createPost(payload)`
 - `postService.createComment(payload)`
+- `supportService.getUrgeRecords()`
+- `supportService.createUrgeRecord(payload)`
 - `agentService.getAgentMessages()`
 - `agentService.buildAgentContext()`
 - `agentService.sendAgentMessage(payload)`
