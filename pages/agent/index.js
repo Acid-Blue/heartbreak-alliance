@@ -121,10 +121,14 @@ Page({
   },
 
   scrollToBottom() {
-    const last = this.data.messages[this.data.messages.length - 1];
-    if (last) {
+    if (this.data.messages.length > 0) {
       this.setData({
-        scrollIntoView: last.id
+        scrollIntoView: ""
+      });
+      wx.nextTick(() => {
+        this.setData({
+          scrollIntoView: "message-bottom"
+        });
       });
     }
   }

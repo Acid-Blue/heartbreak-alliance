@@ -1,9 +1,20 @@
 .agent-page {
-  padding-bottom: 28rpx;
+  display: flex;
+  height: 100vh;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 24rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
 }
 
 .agent-head {
+  flex: 0 0 auto;
   padding: 28rpx;
+}
+
+.agent-page .boundary {
+  flex: 0 0 auto;
 }
 
 .agent-title {
@@ -24,26 +35,58 @@
   font-size: 24rpx;
 }
 
-.support-link {
+.support-entry {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: auto;
-  min-height: 72rpx;
-  margin: 20rpx auto 0;
-  padding: 14rpx 28rpx;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 76rpx;
+  margin-top: 22rpx;
+  padding: 14rpx 18rpx 14rpx 22rpx;
   border: 1rpx solid #d89462;
   border-radius: 8rpx;
   background: #fff1dc;
   color: #9b4f25;
-  font-size: 26rpx;
-  font-weight: 700;
-  line-height: 1.25;
-  white-space: normal;
+}
+
+.support-entry-text {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 14rpx;
+}
+
+.support-entry-title {
+  flex: 0 0 auto;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.support-entry-desc {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: #9f6946;
+  font-size: 23rpx;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.support-entry-arrow {
+  flex: 0 0 auto;
+  margin-left: 12rpx;
+  color: #b56b35;
+  font-size: 36rpx;
+  line-height: 1;
 }
 
 .message-list {
-  height: calc(100vh - 430rpx);
+  flex: 1;
+  min-height: 0;
+  height: 0;
   margin-top: 20rpx;
 }
 
@@ -82,25 +125,36 @@
   line-height: 1.4;
 }
 
+.message-bottom {
+  height: 1rpx;
+}
+
 .composer {
   display: flex;
-  align-items: center;
-  gap: 14rpx;
-  margin-top: 18rpx;
-  padding: 14rpx;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  gap: 12rpx;
+  margin-top: 14rpx;
+  padding: 12rpx;
 }
 
 .composer-input {
   flex: 1;
   min-width: 0;
-  height: 68rpx;
-  padding: 0 16rpx;
+  min-height: 68rpx;
+  max-height: 180rpx;
+  padding: 14rpx 16rpx;
+  border-radius: 6rpx;
+  background: #fffdf8;
+  color: #2f2a25;
   font-size: 27rpx;
+  line-height: 1.45;
+  overflow: auto;
 }
 
 .send-button {
   flex: 0 0 auto;
-  width: 132rpx;
+  width: 96rpx;
   height: 68rpx;
   margin: 0;
   padding: 0;

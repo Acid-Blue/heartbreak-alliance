@@ -3,7 +3,13 @@
     <view class="agent-title">个人 Agent</view>
     <view class="agent-subtitle">{{contextSummary}}</view>
     <view class="context-line">不读取私聊、通讯录或非公开内容。</view>
-    <button class="support-link" bindtap="openSupport">我怕自己会冲动，先撑 10 分钟</button>
+    <view class="support-entry" bindtap="openSupport">
+      <view class="support-entry-text">
+        <text class="support-entry-title">先撑 10 分钟</text>
+        <text class="support-entry-desc">怕自己冲动时使用</text>
+      </view>
+      <text class="support-entry-arrow">›</text>
+    </view>
   </view>
 
   <view class="boundary">{{boundary}}</view>
@@ -29,16 +35,19 @@
         </view>
       </view>
     </view>
+    <view id="message-bottom" class="message-bottom"></view>
   </scroll-view>
 
   <view class="composer card">
-    <input
+    <textarea
       class="composer-input"
       value="{{inputValue}}"
       placeholder="把此刻最强的念头写下来"
-      confirm-type="send"
+      maxlength="500"
+      auto-height="{{true}}"
+      show-confirm-bar="{{false}}"
+      cursor-spacing="24"
       bindinput="onInput"
-      bindconfirm="sendMessage"
     />
     <button class="send-button" loading="{{sending}}" bindtap="sendMessage">发送</button>
   </view>
