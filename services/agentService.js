@@ -14,8 +14,8 @@ function clone(value) {
 
 function getAgentMessages() {
   return cloudApi.callData("listAgentMessages").then((cloudMessages) => {
-    return clone(agentMessages.concat(cloudMessages || []));
-  }).catch(() => Promise.resolve(clone(agentMessages.concat(getLocalMessages()))));
+    return clone(sortMessages(agentMessages.concat(cloudMessages || [])));
+  }).catch(() => Promise.resolve(clone(sortMessages(agentMessages.concat(getLocalMessages())))));
 }
 
 function sendAgentMessage(payload) {
@@ -51,6 +51,12 @@ function sendAgentMessage(payload) {
 
 function getLocalMessages() {
   return localStore.readArray(LOCAL_MESSAGES_KEY);
+}
+
+function sortMessages(messages) {
+  return messages.slice().sort((a, b) => {
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  });
 }
 
 function buildAgentContext() {

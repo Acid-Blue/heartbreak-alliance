@@ -58,7 +58,7 @@ async function runAction(action, payload, openId) {
     case "createComment":
       return createComment(payload.comment, openId);
     case "listAgentMessages":
-      return listMyRecords(COLLECTIONS.agentMessages, openId);
+      return listMyRecords(COLLECTIONS.agentMessages, openId, "asc");
     case "createAgentMessages":
       return createAgentMessages(payload.messages, openId);
     case "listUrgeRecords":
@@ -101,12 +101,12 @@ async function listPostsByCommunity(communityId) {
   return normalizeList(result.data);
 }
 
-async function listMyRecords(collectionName, openId) {
+async function listMyRecords(collectionName, openId, direction = "desc") {
   const result = await db.collection(collectionName)
     .where({
       userOpenId: openId
     })
-    .orderBy("createdAt", "desc")
+    .orderBy("createdAt", direction)
     .limit(100)
     .get();
   return normalizeList(result.data);
