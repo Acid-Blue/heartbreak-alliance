@@ -7,6 +7,9 @@ cloud.init({
 
 const DEFAULT_BASE_URL = "https://api.openai.com/v1";
 const DEFAULT_MODEL = "gpt-5";
+const DEFAULT_MAX_TOKENS = 1200;
+const DEFAULT_TEMPERATURE = 1;
+const DEFAULT_REQUEST_TIMEOUT_MS = 55000;
 
 exports.main = async (event) => {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -28,16 +31,27 @@ exports.main = async (event) => {
       content,
       context
     });
+    const assistantContent = extractAssistantContent(response);
+    if (!assistantContent) {
+      const choice = Array.isArray(response.choices) ? response.choices[0] : null;
+      console.warn("[aiAgent] empty assistant content:", {
+        responseId: response.id || "",
+        model: response.model || "",
+        finishReason: choice && choice.finish_reason ? choice.finish_reason : ""
+      });
+      throw new Error("AI returned empty content");
+    }
 
     return {
       ok: true,
       data: {
-        content: extractAssistantContent(response),
+        content: assistantContent,
         responseId: response.id || "",
         model: response.model || process.env.OPENAI_MODEL || DEFAULT_MODEL
       }
     };
   } catch (error) {
+    console.error("[aiAgent] request failed:", error);
     return {
       ok: false,
       error: error.message || "aiAgent failed"
@@ -47,10 +61,15 @@ exports.main = async (event) => {
 
 function createChatCompletion({ apiKey, baseUrl, model, content, context }) {
   const endpoint = new URL(`${baseUrl.replace(/\/$/, "")}/chat/completions`);
+  if (endpoint.protocol !== "https:") {
+    throw new Error("OPENAI_BASE_URL must start with https://");
+  }
+
   const body = JSON.stringify({
     model,
     messages: buildMessages(content, context),
-    max_completion_tokens: 420
+    max_tokens: Number(process.env.OPENAI_MAX_TOKENS || DEFAULT_MAX_TOKENS),
+    temperature: Number(process.env.OPENAI_TEMPERATURE || DEFAULT_TEMPERATURE)
   });
 
   return requestJson({
@@ -62,16 +81,16 @@ function createChatCompletion({ apiKey, baseUrl, model, content, context }) {
       "Content-Type": "application/json",
       "Content-Length": Buffer.byteLength(body)
     }
-  }, body);
+  }, body, Number(process.env.OPENAI_REQUEST_TIMEOUT_MS || DEFAULT_REQUEST_TIMEOUT_MS));
 }
 
 function buildSystemPrompt() {
   return [
     "你是「失恋阵线联盟」里的陪伴型个人 Agent。",
     "你不是医生、心理咨询师或危机干预人员，不做诊断，不承诺疗效或复合结果。",
-    "回复必须克制、温和、具体。先承接感受，再提出一个小复盘问题，最后给一个很小的下一步行动。",
-    "不要鼓励纠缠、骚扰、报复、窥探前任动态，避免命令式建议。",
-    "如果用户表达自伤、伤害他人或无法保证安全，优先建议联系现实中的可信赖支持或当地紧急救助渠道。"
+    "回复控制在 180 字以内，必须直接输出给用户看的正文。",
+    "结构：先承接感受，再问一个小复盘问题，最后给一个很小的下一步行动。",
+    "不要鼓励纠缠、骚扰、报复、窥探前任动态。"
   ].join("\n");
 }
 
@@ -123,7 +142,7 @@ function truncate(value, length) {
   return text.length > length ? `${text.slice(0, length)}...` : text;
 }
 
-function requestJson(options, body) {
+function requestJson(options, body, timeoutMs) {
   return new Promise((resolve, reject) => {
     const request = https.request(options, (response) => {
       let raw = "";
@@ -136,7 +155,7 @@ function requestJson(options, body) {
         try {
           const parsed = raw ? JSON.parse(raw) : {};
           if (response.statusCode < 200 || response.statusCode >= 300) {
-            reject(new Error(parsed.error && parsed.error.message ? parsed.error.message : `Kimi request failed: ${response.statusCode}`));
+            reject(new Error(parsed.error && parsed.error.message ? parsed.error.message : `AI request failed: ${response.statusCode}`));
             return;
           }
           resolve(parsed);
@@ -147,6 +166,9 @@ function requestJson(options, body) {
     });
 
     request.on("error", reject);
+    request.setTimeout(timeoutMs, () => {
+      request.destroy(new Error("AI request timed out"));
+    });
     request.write(body);
     request.end();
   });
@@ -156,7 +178,25 @@ function extractAssistantContent(response) {
   const choice = response
     && Array.isArray(response.choices)
     && response.choices[0];
-  return choice && choice.message && choice.message.content
-    ? choice.message.content.trim()
-    : "";
+  const message = choice && choice.message ? choice.message : {};
+  const content = message.content;
+
+  if (typeof content === "string") {
+    return content.trim();
+  }
+
+  if (Array.isArray(content)) {
+    return content.map((part) => {
+      if (typeof part === "string") {
+        return part;
+      }
+      return part && typeof part.text === "string" ? part.text : "";
+    }).join("").trim();
+  }
+
+  if (typeof message.reasoning_content === "string") {
+    return message.reasoning_content.trim();
+  }
+
+  return "";
 }

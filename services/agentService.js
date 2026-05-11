@@ -152,6 +152,9 @@ function createAiReply(content, context) {
       content: result.data.content,
       source: `AI推理 · ${context.sourceText}`
     };
+  }).catch((error) => {
+    console.warn("[agentService] aiAgent failed, fallback to mock reply:", error.message || error);
+    throw error;
   });
 }
 

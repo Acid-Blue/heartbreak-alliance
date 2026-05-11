@@ -18,10 +18,14 @@
 3. 上传并部署云函数：
    - `cloudfunctions/dataStore`
    - `cloudfunctions/aiAgent`
+   - `aiAgent` 已配置 60 秒云函数超时；如果微信开发者工具上传后控制台仍显示较短超时，请在云开发控制台把该函数的超时时间手动调到 60 秒后重新测试。
 4. 在 `aiAgent` 云函数环境变量中配置：
    - `OPENAI_API_KEY`：OpenAI-compatible API Key。
    - `OPENAI_BASE_URL`：可选，默认 `https://api.openai.com/v1`。接 Kimi 时填写 `https://api.moonshot.cn/v1`。
    - `OPENAI_MODEL`：可选，默认 `gpt-5`。接 Kimi 时填写实际可用模型，例如 `kimi-k2.6`。
+   - `OPENAI_MAX_TOKENS`：可选，默认 `1200`。如果日志出现 `finishReason: length`，可调到 `2000` 或 `3000`。
+   - `OPENAI_TEMPERATURE`：可选，默认 `1`。`kimi-k2.6` 只允许 `1`。
+   - `OPENAI_REQUEST_TIMEOUT_MS`：可选，默认 `55000`。必须小于云函数超时时间。
 5. 创建或授权以下云数据库集合：
    - `ha_posts`
    - `ha_comments`
@@ -74,4 +78,7 @@ Agent 发送消息时：
 OPENAI_API_KEY=你的 Kimi / Moonshot API Key
 OPENAI_BASE_URL=https://api.moonshot.cn/v1
 OPENAI_MODEL=kimi-k2.6
+OPENAI_MAX_TOKENS=1200
+OPENAI_TEMPERATURE=1
+OPENAI_REQUEST_TIMEOUT_MS=55000
 ```
