@@ -69,8 +69,8 @@
   </view>
 
   <view class="support-actions">
-    <button class="primary-button" bindtap="openAgent">找 Agent 陪我说完整</button>
-    <button class="secondary-button" bindtap="openReview">判断要不要联系 TA</button>
-    <button class="secondary-button" bindtap="openPublish">发到阵线小队</button>
+    <button class="primary-button support-action-main" bindtap="openAgent">找 Agent 陪我说完整</button>
+    <button class="secondary-button support-action-secondary" bindtap="openReview">判断要不要联系 TA</button>
+    <button class="secondary-button support-action-secondary" bindtap="openPublish">发到阵线小队</button>
   </view>
 </view>
