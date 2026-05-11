@@ -1,7 +1,7 @@
 <view class="page agent-page">
   <view class="agent-head card">
     <view class="agent-title">个人 Agent</view>
-    <view class="agent-subtitle">会参考你的发言和阵线小队公开内容，帮你整理情绪线索。</view>
+    <view class="agent-subtitle">{{contextSummary}}</view>
     <view class="context-line">不读取私聊、通讯录或非公开内容。</view>
   </view>
 

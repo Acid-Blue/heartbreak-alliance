@@ -51,12 +51,36 @@
       </view>
       <view class="permission card">
         <view class="permission-row">
-          <text>参考本人发布</text>
-          <text class="permission-state">已允许</text>
+          <view>
+            <view class="permission-name">参考本人发布和回应</view>
+            <view class="permission-help">用于整理你自己的情绪线索。</view>
+          </view>
+          <view class="permission-control">
+            <text class="permission-state">{{user.agentPermissions.ownContent ? '已允许' : '已关闭'}}</text>
+            <switch
+              checked="{{user.agentPermissions.ownContent}}"
+              color="#2F6655"
+              disabled="{{savingPermission}}"
+              data-key="ownContent"
+              bindchange="onPermissionChange"
+            />
+          </view>
         </view>
         <view class="permission-row">
-          <text>参考小队公开内容</text>
-          <text class="permission-state">已允许</text>
+          <view>
+            <view class="permission-name">参考小队公开内容</view>
+            <view class="permission-help">用于结合你所在阵线小队的公开经验。</view>
+          </view>
+          <view class="permission-control">
+            <text class="permission-state">{{user.agentPermissions.publicCommunityContent ? '已允许' : '已关闭'}}</text>
+            <switch
+              checked="{{user.agentPermissions.publicCommunityContent}}"
+              color="#2F6655"
+              disabled="{{savingPermission}}"
+              data-key="publicCommunityContent"
+              bindchange="onPermissionChange"
+            />
+          </view>
         </view>
         <view class="permission-desc">Agent 不读取私聊、通讯录或非公开内容。后续接入真实模型前，需要再次确认隐私授权和数据范围。</view>
       </view>

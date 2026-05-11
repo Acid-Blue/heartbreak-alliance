@@ -82,11 +82,31 @@
   justify-content: space-between;
   gap: 18rpx;
   margin-bottom: 18rpx;
+}
+
+.permission-name {
+  color: #2f2a24;
   font-size: 28rpx;
+  font-weight: 700;
+}
+
+.permission-help {
+  margin-top: 6rpx;
+  color: #7c756c;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.permission-control {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10rpx;
 }
 
 .permission-state {
   color: #2f6655;
+  font-size: 24rpx;
   font-weight: 700;
 }
 

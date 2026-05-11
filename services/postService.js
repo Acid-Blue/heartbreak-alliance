@@ -76,6 +76,10 @@ function getCommentsByPost(postId) {
   return Promise.resolve(clone(matchedComments));
 }
 
+function getMyComments() {
+  return Promise.resolve(clone(getCreatedComments()));
+}
+
 function getMyPosts() {
   return Promise.resolve(clone(getCreatedPosts().concat(posts.slice(0, 1)).map(decoratePost)));
 }
@@ -137,6 +141,7 @@ module.exports = {
   getPost,
   getPostsByCommunity,
   getCommentsByPost,
+  getMyComments,
   getMyPosts,
   createPost,
   createComment

@@ -9,6 +9,9 @@
 - `avatar`: 头像占位
 - `joinedCommunityIds`: 已加入阵线小队 ID
 - `agentConsent`: 是否允许 Agent 参考本人内容和小队公开内容
+- `agentPermissions`: Agent 授权范围
+- `agentPermissions.ownContent`: 是否允许参考本人发布和回应
+- `agentPermissions.publicCommunityContent`: 是否允许参考所在小队公开内容
 
 ### Community
 
@@ -59,13 +62,16 @@
 - `postService.getPost(id)`
 - `postService.getPostsByCommunity(communityId)`
 - `postService.getCommentsByPost(postId)`
+- `postService.getMyComments()`
 - `postService.createPost(payload)`
 - `postService.createComment(payload)`
 - `agentService.getAgentMessages()`
+- `agentService.buildAgentContext()`
 - `agentService.sendAgentMessage(payload)`
 - `userService.getCurrentUser()`
 - `userService.getJoinedCommunities()`
 - `userService.getMyPosts()`
+- `userService.updateAgentPermissions(patch)`
 
 ## Routes
 
