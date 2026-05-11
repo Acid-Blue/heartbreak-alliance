@@ -47,6 +47,7 @@
     "disableSWC": true
   },
   "compileType": "miniprogram",
+  "cloudfunctionRoot": "cloudfunctions/",
   "libVersion": "3.7.12",
   "appid": "wx01503d75e065e309",
   "projectname": "失恋阵线联盟",

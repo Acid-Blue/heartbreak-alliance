@@ -161,13 +161,13 @@
 ## 未覆盖范围
 
 - 真机兼容性、性能、弱网体验和长列表压力测试。
-- 微信云开发环境中的真实数据库写入、云函数部署验证和 OpenAI 实际请求。
+- 微信云开发环境中的真实数据库写入、云函数部署验证和 OpenAI-compatible API 实际请求。
 - 登录认证和内容审核。
 - 自动化回归测试和 CI；当前仓库尚未配置相关工具链。
 
 ## 云端回归补充
 
-配置 `CLOUD_ENV_ID`、部署 `dataStore` / `aiAgent` 云函数并设置 `OPENAI_API_KEY` 后，需要补充验证：
+配置 `CLOUD_ENV_ID`、部署 `dataStore` / `aiAgent` 云函数并设置 `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL` 后，需要补充验证：
 
 - 发布帖子后，`ha_posts` 出现对应记录。
 - 提交回应后，`ha_comments` 出现对应记录，帖子回应数更新。
