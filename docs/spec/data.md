@@ -78,7 +78,7 @@
 
 ## Services
 
-所有服务首版返回 Promise。初始数据来源为本地 mock，用户在本机创建的帖子、回应和 Agent 对话通过 `wxStorage` 持久化。
+所有服务首版返回 Promise。配置云开发环境后，用户生成数据优先通过云函数写入云数据库；未配置云环境或云函数失败时，回退到本地 mock 和 `wxStorage`。
 
 - `communityService.getCommunities()`
 - `communityService.getFeaturedCommunities()`
@@ -95,6 +95,8 @@
 - `supportService.detectSafetyRisk(value, reason)`
 - `reviewService.getReviewRecords()`
 - `reviewService.createContactDecision(payload)`
+- `cloudfunctions/dataStore`
+- `cloudfunctions/aiAgent`
 - `agentService.getAgentMessages()`
 - `agentService.buildAgentContext()`
 - `agentService.sendAgentMessage(payload)`
@@ -113,3 +115,10 @@
 ## Cloud Boundary
 
 后续接入云开发时，应优先替换 services 内部实现，页面层不直接调用 `wx.cloud.database()`、云函数或存储实现。
+
+当前云边界已建立：
+
+- 页面层仍只调用 `services/`。
+- `services/` 通过 `utils/cloudApi.js` 调用云函数。
+- `dataStore` 云函数负责云数据库读写。
+- `aiAgent` 云函数负责服务端 AI 推理，前端不保存 API Key。

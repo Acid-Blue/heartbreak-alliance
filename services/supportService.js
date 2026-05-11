@@ -1,4 +1,5 @@
 const { createLocalId } = require("../utils/id");
+const cloudApi = require("../utils/cloudApi");
 const { detectSafetyRisk } = require("./safetyService");
 const localStore = require("../utils/localStore");
 
@@ -23,7 +24,9 @@ function clone(value) {
 }
 
 function getUrgeRecords() {
-  return Promise.resolve(clone(localStore.readArray(URGE_RECORDS_KEY)));
+  return cloudApi.callData("listUrgeRecords").then((cloudRecords) => {
+    return clone(cloudRecords || []);
+  }).catch(() => Promise.resolve(clone(localStore.readArray(URGE_RECORDS_KEY))));
 }
 
 function createUrgeRecord(payload) {
@@ -46,11 +49,14 @@ function createUrgeRecord(payload) {
     safetyNotice: safety.notice
   };
 
-  const nextRecords = localStore.readArray(URGE_RECORDS_KEY);
-  nextRecords.unshift(record);
-  localStore.write(URGE_RECORDS_KEY, nextRecords);
-
-  return Promise.resolve(clone(record));
+  return cloudApi.callData("createUrgeRecord", { record }).then((cloudRecord) => {
+    return clone(cloudRecord);
+  }).catch(() => {
+    const nextRecords = localStore.readArray(URGE_RECORDS_KEY);
+    nextRecords.unshift(record);
+    localStore.write(URGE_RECORDS_KEY, nextRecords);
+    return Promise.resolve(clone(record));
+  });
 }
 
 module.exports = {

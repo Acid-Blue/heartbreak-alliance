@@ -1,5 +1,6 @@
 const { currentUser, communities } = require("./mockData");
 const { getMyPosts } = require("./postService");
+const cloudApi = require("../utils/cloudApi");
 const localStore = require("../utils/localStore");
 
 const AGENT_PERMISSIONS_KEY = "heartbreakAlliance.agentPermissions";
@@ -32,12 +33,12 @@ function readAgentPermissions() {
 }
 
 function getCurrentUser() {
-  const agentPermissions = readAgentPermissions();
-  return Promise.resolve(clone({
-    ...currentUser,
-    agentConsent: agentPermissions.ownContent || agentPermissions.publicCommunityContent,
-    agentPermissions
-  }));
+  return cloudApi.callData("getSetting", {
+    key: AGENT_PERMISSIONS_KEY,
+    fallback: readAgentPermissions()
+  }).then((value) => {
+    return buildCurrentUser(normalizeAgentPermissions(value));
+  }).catch(() => Promise.resolve(buildCurrentUser(readAgentPermissions())));
 }
 
 function getJoinedCommunities() {
@@ -51,7 +52,18 @@ function updateAgentPermissions(patch) {
     ...patch
   });
   localStore.write(AGENT_PERMISSIONS_KEY, nextPermissions);
-  return Promise.resolve(clone(nextPermissions));
+  return cloudApi.callData("setSetting", {
+    key: AGENT_PERMISSIONS_KEY,
+    value: nextPermissions
+  }).then(() => clone(nextPermissions)).catch(() => Promise.resolve(clone(nextPermissions)));
+}
+
+function buildCurrentUser(agentPermissions) {
+  return clone({
+    ...currentUser,
+    agentConsent: agentPermissions.ownContent || agentPermissions.publicCommunityContent,
+    agentPermissions
+  });
 }
 
 module.exports = {

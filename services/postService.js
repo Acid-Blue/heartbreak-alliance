@@ -1,5 +1,6 @@
 const { posts, comments } = require("./mockData");
 const { createLocalId } = require("../utils/id");
+const cloudApi = require("../utils/cloudApi");
 const localStore = require("../utils/localStore");
 
 const CREATED_POSTS_KEY = "heartbreakAlliance.createdPosts";
@@ -58,30 +59,62 @@ function decoratePost(post) {
   };
 }
 
+function normalizeCloudPosts(cloudPosts) {
+  return (cloudPosts || []).map((post) => ({
+    ...post,
+    commentCount: post.commentCount || 0
+  }));
+}
+
 function getFeed() {
-  return Promise.resolve(clone(publicPosts().map(decoratePost)));
+  return cloudApi.callData("listPublicPosts").then((cloudPosts) => {
+    return clone(normalizeCloudPosts(cloudPosts).concat(publicPosts().map(decoratePost)));
+  }).catch(() => Promise.resolve(clone(publicPosts().map(decoratePost))));
 }
 
 function getPost(id) {
-  const post = allPosts().find((item) => item.id === id) || null;
-  return Promise.resolve(clone(post ? decoratePost(post) : null));
+  return cloudApi.callData("getPost", { id }).then((cloudPost) => {
+    if (cloudPost) {
+      return clone({
+        ...cloudPost,
+        commentCount: cloudPost.commentCount || 0
+      });
+    }
+    const post = allPosts().find((item) => item.id === id) || null;
+    return clone(post ? decoratePost(post) : null);
+  }).catch(() => {
+    const post = allPosts().find((item) => item.id === id) || null;
+    return Promise.resolve(clone(post ? decoratePost(post) : null));
+  });
 }
 
 function getPostsByCommunity(communityId) {
-  return Promise.resolve(clone(publicPosts().filter((post) => post.communityId === communityId).map(decoratePost)));
+  return cloudApi.callData("listPostsByCommunity", { communityId }).then((cloudPosts) => {
+    const mockPosts = publicPosts().filter((post) => post.communityId === communityId).map(decoratePost);
+    return clone(normalizeCloudPosts(cloudPosts).concat(mockPosts));
+  }).catch(() => Promise.resolve(clone(publicPosts().filter((post) => post.communityId === communityId).map(decoratePost))));
 }
 
 function getCommentsByPost(postId) {
-  const matchedComments = allComments().filter((comment) => comment.postId === postId);
-  return Promise.resolve(clone(matchedComments));
+  return cloudApi.callData("listCommentsByPost", { postId }).then((cloudComments) => {
+    const matchedComments = allComments().filter((comment) => comment.postId === postId);
+    return clone((cloudComments || []).concat(matchedComments));
+  }).catch(() => {
+    const matchedComments = allComments().filter((comment) => comment.postId === postId);
+    return Promise.resolve(clone(matchedComments));
+  });
 }
 
 function getMyComments() {
-  return Promise.resolve(clone(getCreatedComments()));
+  return cloudApi.callData("listMyComments").then((cloudComments) => {
+    return clone((cloudComments || []).concat(getCreatedComments()));
+  }).catch(() => Promise.resolve(clone(getCreatedComments())));
 }
 
 function getMyPosts() {
-  return Promise.resolve(clone(getCreatedPosts().concat(posts.slice(0, 1)).map(decoratePost)));
+  return cloudApi.callData("listMyPosts").then((cloudPosts) => {
+    return clone(normalizeCloudPosts(cloudPosts).concat(getCreatedPosts().concat(posts.slice(0, 1)).map(decoratePost)));
+  }).catch(() => Promise.resolve(clone(getCreatedPosts().concat(posts.slice(0, 1)).map(decoratePost))));
 }
 
 function createPost(payload) {
@@ -100,11 +133,17 @@ function createPost(payload) {
     visibility
   };
 
-  const nextPosts = getCreatedPosts();
-  nextPosts.unshift(post);
-  saveCreatedPosts(nextPosts);
-
-  return Promise.resolve(clone(decoratePost(post)));
+  return cloudApi.callData("createPost", { post }).then((cloudPost) => {
+    return clone({
+      ...cloudPost,
+      commentCount: cloudPost.commentCount || 0
+    });
+  }).catch(() => {
+    const nextPosts = getCreatedPosts();
+    nextPosts.unshift(post);
+    saveCreatedPosts(nextPosts);
+    return Promise.resolve(clone(decoratePost(post)));
+  });
 }
 
 function createComment(payload) {
@@ -123,14 +162,20 @@ function createComment(payload) {
     createdAt: new Date().toISOString()
   };
 
-  const nextComments = getCreatedComments();
-  nextComments.unshift(comment);
-  saveCreatedComments(nextComments);
-
-  return Promise.resolve(clone({
-    comment,
-    post: decoratePost(post)
-  }));
+  return cloudApi.callData("createComment", { comment }).then((cloudComment) => {
+    return getPost(payload.postId).then((nextPost) => clone({
+      comment: cloudComment,
+      post: nextPost || decoratePost(post)
+    }));
+  }).catch(() => {
+    const nextComments = getCreatedComments();
+    nextComments.unshift(comment);
+    saveCreatedComments(nextComments);
+    return Promise.resolve(clone({
+      comment,
+      post: decoratePost(post)
+    }));
+  });
 }
 
 module.exports = {

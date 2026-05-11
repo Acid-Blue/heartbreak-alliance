@@ -1,4 +1,5 @@
 const { createLocalId } = require("../utils/id");
+const cloudApi = require("../utils/cloudApi");
 const localStore = require("../utils/localStore");
 const { detectSafetyRisk } = require("./safetyService");
 
@@ -26,7 +27,9 @@ function clone(value) {
 }
 
 function getReviewRecords() {
-  return Promise.resolve(clone(localStore.readArray(REVIEW_RECORDS_KEY)));
+  return cloudApi.callData("listReviewRecords").then((cloudRecords) => {
+    return clone(cloudRecords || []);
+  }).catch(() => Promise.resolve(clone(localStore.readArray(REVIEW_RECORDS_KEY))));
 }
 
 function createContactDecision(payload) {
@@ -63,11 +66,14 @@ function createContactDecision(payload) {
     createdAt: new Date().toISOString()
   };
 
-  const nextRecords = localStore.readArray(REVIEW_RECORDS_KEY);
-  nextRecords.unshift(record);
-  localStore.write(REVIEW_RECORDS_KEY, nextRecords);
-
-  return Promise.resolve(clone(record));
+  return cloudApi.callData("createReviewRecord", { record }).then((cloudRecord) => {
+    return clone(cloudRecord);
+  }).catch(() => {
+    const nextRecords = localStore.readArray(REVIEW_RECORDS_KEY);
+    nextRecords.unshift(record);
+    localStore.write(REVIEW_RECORDS_KEY, nextRecords);
+    return Promise.resolve(clone(record));
+  });
 }
 
 function normalizeUrgeLevel(value) {

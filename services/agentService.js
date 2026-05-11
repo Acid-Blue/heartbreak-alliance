@@ -1,5 +1,6 @@
 const { agentMessages } = require("./mockData");
 const { createLocalId } = require("../utils/id");
+const cloudApi = require("../utils/cloudApi");
 const localStore = require("../utils/localStore");
 const postService = require("./postService");
 const { detectSafetyRisk } = require("./safetyService");
@@ -12,7 +13,9 @@ function clone(value) {
 }
 
 function getAgentMessages() {
-  return Promise.resolve(clone(agentMessages.concat(getLocalMessages())));
+  return cloudApi.callData("listAgentMessages").then((cloudMessages) => {
+    return clone(agentMessages.concat(cloudMessages || []));
+  }).catch(() => Promise.resolve(clone(agentMessages.concat(getLocalMessages()))));
 }
 
 function sendAgentMessage(payload) {
@@ -28,18 +31,21 @@ function sendAgentMessage(payload) {
 
   return buildAgentContext().then((context) => {
     const safety = detectSafetyRisk(content);
-    const reply = {
-      id: createLocalId("msg-agent"),
-      role: "agent",
-      content: safety.hasRisk ? buildSafetyReply(content, safety) : buildMockReply(content, context),
-      source: safety.hasRisk ? "安全提醒" : context.sourceText,
-      createdAt: new Date().toISOString()
-    };
+    const replyPromise = safety.hasRisk
+      ? Promise.resolve(buildSafetyAgentReply(content, safety))
+      : createAiReply(content, context).catch(() => buildMockAgentReply(content, context));
 
-    const nextMessages = getLocalMessages().concat([userMessage, reply]);
-    localStore.write(LOCAL_MESSAGES_KEY, nextMessages);
+    return replyPromise.then((replyPayload) => {
+      const reply = {
+        id: createLocalId("msg-agent"),
+        role: "agent",
+        content: replyPayload.content,
+        source: replyPayload.source,
+        createdAt: new Date().toISOString()
+      };
 
-    return clone({ userMessage, reply });
+      return persistAgentMessages([userMessage, reply]).then(() => clone({ userMessage, reply }));
+    });
   });
 }
 
@@ -112,10 +118,48 @@ function buildMockReply(content, context) {
   return `我先接住你说的“${focus}”。${contextHint}这听起来不是小事，也不需要立刻被解决。你可以先写下：这个念头最强烈的时候，你真正想得到的是回应、解释，还是一个确定的结束？`;
 }
 
-function buildSafetyReply(content, safety) {
+function buildMockAgentReply(content, context) {
+  return {
+    content: buildMockReply(content, context),
+    source: context.sourceText
+  };
+}
+
+function buildSafetyAgentReply(content, safety) {
   const trimmed = (content || "").trim();
   const focus = trimmed.length > 18 ? `${trimmed.slice(0, 18)}...` : trimmed || "这件事";
-  return `我先接住你说的“${focus}”。这条内容里有需要优先处理的安全信号。${safety.notice}如果可以，现在先离开可能伤害自己的物品或场景，去到有人能看见你的地方，并把这句话发给一个现实中可信赖的人。`;
+  return {
+    content: `我先接住你说的“${focus}”。这条内容里有需要优先处理的安全信号。${safety.notice}如果可以，现在先离开可能伤害自己的物品或场景，去到有人能看见你的地方，并把这句话发给一个现实中可信赖的人。`,
+    source: "安全提醒"
+  };
+}
+
+function createAiReply(content, context) {
+  return cloudApi.callFunction("aiAgent", {
+    content,
+    context: {
+      sourceText: context.sourceText,
+      myPosts: context.myPosts,
+      myComments: context.myComments,
+      publicPosts: context.publicPosts
+    }
+  }).then((result) => {
+    if (!result || result.ok === false || !result.data || !result.data.content) {
+      throw new Error((result && result.error) || "AI reply failed");
+    }
+
+    return {
+      content: result.data.content,
+      source: `AI推理 · ${context.sourceText}`
+    };
+  });
+}
+
+function persistAgentMessages(messages) {
+  return cloudApi.callData("createAgentMessages", { messages }).catch(() => {
+    const nextMessages = getLocalMessages().concat(messages);
+    localStore.write(LOCAL_MESSAGES_KEY, nextMessages);
+  });
 }
 
 module.exports = {
