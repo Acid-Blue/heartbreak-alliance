@@ -1,4 +1,5 @@
 const supportService = require("../../services/supportService");
+const { formatRelativeTime } = require("../../utils/format");
 
 Page({
   data: {
@@ -9,21 +10,39 @@ Page({
     draft: "",
     safetyNotice: "",
     savedRecord: null,
+    recentRecords: [],
+    openedRecordId: "",
     recordCount: 0,
     submitting: false,
     boundary: getApp().globalData.serviceBoundary
   },
 
   onLoad() {
-    this.loadRecordCount();
+    this.loadRecords();
   },
 
-  loadRecordCount() {
+  onShow() {
+    this.loadRecords();
+  },
+
+  loadRecords() {
     supportService.getUrgeRecords().then((records) => {
+      const recentRecords = records.slice(0, 5).map((record) => ({
+        ...record,
+        relativeTime: formatRelativeTime(record.createdAt),
+        preview: this.formatPreview(record.draft)
+      }));
+
       this.setData({
-        recordCount: records.length
+        recordCount: records.length,
+        recentRecords
       });
     });
+  },
+
+  formatPreview(value) {
+    const text = value || "";
+    return text.length > 36 ? `${text.slice(0, 36)}...` : text;
   },
 
   chooseReason(event) {
@@ -75,8 +94,10 @@ Page({
         draft: "",
         safetyNotice: this.getSafetyNotice("", this.data.selectedReason),
         submitting: false,
-        recordCount: this.data.recordCount + 1
+        recordCount: this.data.recordCount + 1,
+        openedRecordId: record.id
       });
+      this.loadRecords();
       wx.showToast({
         title: "已先存下",
         icon: "success"
@@ -89,6 +110,14 @@ Page({
         title: "保存失败，请稍后再试",
         icon: "none"
       });
+    });
+  },
+
+  toggleRecord(event) {
+    const { id } = event.currentTarget.dataset;
+
+    this.setData({
+      openedRecordId: this.data.openedRecordId === id ? "" : id
     });
   },
 

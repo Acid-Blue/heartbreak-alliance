@@ -57,6 +57,34 @@
 
   <view class="section">
     <view class="section-header">
+      <text class="section-title">最近暂存</text>
+      <text class="section-action">已记录 {{recordCount}} 次</text>
+    </view>
+    <view wx:if="{{recentRecords.length === 0}}" class="empty card">还没有暂存内容。</view>
+    <view class="record-list">
+      <view
+        wx:for="{{recentRecords}}"
+        wx:key="id"
+        class="record-card card {{openedRecordId === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="toggleRecord"
+      >
+        <view class="record-top">
+          <text class="record-reason">{{item.reasonText}}</text>
+          <text class="record-time">{{item.relativeTime}}</text>
+        </view>
+        <view class="record-preview">{{item.preview}}</view>
+        <view wx:if="{{openedRecordId === item.id}}" class="record-detail">
+          <view class="record-draft">{{item.draft}}</view>
+          <view wx:if="{{item.hasSafetyRisk}}" class="record-risk">这条记录命中安全提醒：{{item.safetyNotice}}</view>
+          <view class="record-hint">再次点击可收起。</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
       <text class="section-title">10 分钟缓冲步骤</text>
       <text class="section-action">已记录 {{recordCount}} 次</text>
     </view>
