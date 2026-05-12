@@ -7,7 +7,12 @@
 - `id`: 用户 ID
 - `nickname`: 昵称
 - `avatar`: 头像占位
+- `avatarUrl`: 微信头像或云存储头像地址
+- `bio`: 个人备注
+- `stage`: 当前恢复阶段，`急性期` | `复盘期` | `孤独期` | `重建期`
 - `joinedCommunityIds`: 已加入阵线小队 ID
+- `isProfileAuthorized`: 是否已保存个性化资料
+- `isCloudUser`: 当前资料是否来自云端 OpenID 账户
 - `agentConsent`: 是否允许 Agent 参考本人内容和小队公开内容
 - `agentPermissions`: Agent 授权范围
 - `agentPermissions.ownContent`: 是否允许参考本人发布和回应
@@ -101,8 +106,12 @@
 - `agentService.buildAgentContext()`
 - `agentService.sendAgentMessage(payload)`
 - `userService.getCurrentUser()`
+- `userService.getUserProfile()`
 - `userService.getJoinedCommunities()`
 - `userService.getMyPosts()`
+- `userService.loginWithWeChatProfile()`
+- `userService.updateUserProfile(patch)`
+- `userService.logoutLocalProfile()`
 - `userService.updateAgentPermissions(patch)`
 
 ## Routes
@@ -122,3 +131,5 @@
 - `services/` 通过 `utils/cloudApi.js` 调用云函数。
 - `dataStore` 云函数负责云数据库读写。
 - `aiAgent` 云函数负责服务端 AI 推理，前端不保存 API Key。
+
+`dataStore` 当前使用集合：`ha_users`、`ha_posts`、`ha_comments`、`ha_agent_messages`、`ha_urge_records`、`ha_review_records`、`ha_user_settings`。用户资料通过 `getUserProfile` 和 `updateUserProfile` 读写，服务端以微信 OpenID 作为所有权边界。

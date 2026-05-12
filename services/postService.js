@@ -66,6 +66,12 @@ function normalizeCloudPosts(cloudPosts) {
   }));
 }
 
+function getCurrentAuthorName() {
+  return require("./userService").getCurrentUser()
+    .then((user) => user.nickname || "匿名队友")
+    .catch(() => "匿名队友");
+}
+
 function getFeed() {
   return cloudApi.callData("listPublicPosts").then((cloudPosts) => {
     return clone(normalizeCloudPosts(cloudPosts).concat(publicPosts().map(decoratePost)));
@@ -120,61 +126,71 @@ function getMyPosts() {
 function createPost(payload) {
   const selectedType = postTypes.find((item) => item.value === payload.type) || postTypes[0];
   const visibility = visibilityOptions.includes(payload.visibility) ? payload.visibility : PUBLIC_VISIBILITY;
-  const post = {
-    id: createLocalId("post-local"),
-    communityId: payload.communityId,
-    authorName: "匿名队友",
-    type: selectedType.value,
-    typeText: selectedType.label,
-    emotion: payload.emotion,
-    content: payload.content,
-    createdAt: new Date().toISOString(),
-    commentCount: 0,
-    visibility
-  };
 
-  return cloudApi.callData("createPost", { post }).then((cloudPost) => {
-    return clone({
-      ...cloudPost,
-      commentCount: cloudPost.commentCount || 0
+  return getCurrentAuthorName().then((authorName) => {
+    const post = {
+      id: createLocalId("post-local"),
+      communityId: payload.communityId,
+      authorName,
+      type: selectedType.value,
+      typeText: selectedType.label,
+      emotion: payload.emotion,
+      content: payload.content,
+      createdAt: new Date().toISOString(),
+      commentCount: 0,
+      visibility
+    };
+
+    return cloudApi.callData("createPost", { post }).then((cloudPost) => {
+      return clone({
+        ...cloudPost,
+        commentCount: cloudPost.commentCount || 0
+      });
+    }).catch(() => {
+      const nextPosts = getCreatedPosts();
+      nextPosts.unshift(post);
+      saveCreatedPosts(nextPosts);
+      return Promise.resolve(clone(decoratePost(post)));
     });
-  }).catch(() => {
-    const nextPosts = getCreatedPosts();
-    nextPosts.unshift(post);
-    saveCreatedPosts(nextPosts);
-    return Promise.resolve(clone(decoratePost(post)));
   });
 }
 
 function createComment(payload) {
-  const post = allPosts().find((item) => item.id === payload.postId);
   const content = (payload.content || "").trim();
 
-  if (!post || !content) {
+  if (!content) {
     return Promise.reject(new Error("invalid comment payload"));
   }
 
-  const comment = {
-    id: createLocalId("comment-local"),
-    postId: payload.postId,
-    authorName: "匿名队友",
-    content,
-    createdAt: new Date().toISOString()
-  };
+  return getPost(payload.postId).then((post) => {
+    if (!post) {
+      throw new Error("invalid comment payload");
+    }
 
-  return cloudApi.callData("createComment", { comment }).then((cloudComment) => {
-    return getPost(payload.postId).then((nextPost) => clone({
-      comment: cloudComment,
-      post: nextPost || decoratePost(post)
-    }));
-  }).catch(() => {
-    const nextComments = getCreatedComments();
-    nextComments.unshift(comment);
-    saveCreatedComments(nextComments);
-    return Promise.resolve(clone({
-      comment,
-      post: decoratePost(post)
-    }));
+    return getCurrentAuthorName().then((authorName) => {
+      const comment = {
+        id: createLocalId("comment-local"),
+        postId: payload.postId,
+        authorName,
+        content,
+        createdAt: new Date().toISOString()
+      };
+
+      return cloudApi.callData("createComment", { comment }).then((cloudComment) => {
+        return getPost(payload.postId).then((nextPost) => clone({
+          comment: cloudComment,
+          post: nextPost || decoratePost(post)
+        }));
+      }).catch(() => {
+        const nextComments = getCreatedComments();
+        nextComments.unshift(comment);
+        saveCreatedComments(nextComments);
+        return Promise.resolve(clone({
+          comment,
+          post: decoratePost(post)
+        }));
+      });
+    });
   });
 }
 
