@@ -70,6 +70,7 @@
 ### ReviewRecord
 
 - `id`: 复盘记录 ID
+- `kind`: 记录类型，`contactDecision` | `relationshipReview` | `noContactPlan`
 - `intent`: 联系目的
 - `intentText`: 联系目的文案
 - `wait`: 已等待时长
@@ -78,6 +79,23 @@
 - `hasPracticalReason`: 是否有现实事务必要性
 - `draft`: 想联系 TA 的草稿
 - `decision`: 决策辅助结果
+- `pattern`: 关系重复模式
+- `patternText`: 关系重复模式文案
+- `event`: 关系事件描述
+- `myNeed`: 用户在关系中的核心需求
+- `taNeed`: 对方可能的需求或限制
+- `responsibility`: 责任边界复盘
+- `evidenceFor`: 支持联系/复合的证据
+- `evidenceAgainst`: 不支持联系/复合的证据
+- `lesson`: 用户带走的结论
+- `insight`: 结构化复盘结果
+- `duration`: 断联周期
+- `riskWindow`: 断联破戒高风险时段
+- `protectionAction`: 保护动作
+- `goal`: 断联目标
+- `replacement`: 冲动替代动作
+- `supportPerson`: 可选现实支持对象
+- `plan`: 断联计划结果
 - `hasSafetyRisk`: 是否命中安全提醒
 - `createdAt`: 创建时间
 
@@ -100,6 +118,8 @@
 - `supportService.detectSafetyRisk(value, reason)`
 - `reviewService.getReviewRecords()`
 - `reviewService.createContactDecision(payload)`
+- `reviewService.createRelationshipReview(payload)`
+- `reviewService.createNoContactPlan(payload)`
 - `cloudfunctions/dataStore`
 - `cloudfunctions/aiAgent`
 - `agentService.getAgentMessages()`

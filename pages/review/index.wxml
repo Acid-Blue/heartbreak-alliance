@@ -1,96 +1,248 @@
 <view class="page review-page">
   <view class="review-hero card">
     <view class="eyebrow">关系复盘</view>
-    <view class="review-title">要不要联系 TA？</view>
-    <view class="review-subtitle">先不要急着发出去。把目的、冲动强度和现实必要性拆开看，再决定下一步。</view>
+    <view class="review-title">复盘关系，守住边界</view>
+    <view class="review-subtitle">把联系冲动、关系模式和断联执行拆开处理。先得到清晰度，再决定下一步。</view>
   </view>
 
   <view class="boundary">{{boundary}}</view>
 
-  <view class="section">
-    <view class="section-header">
-      <text class="section-title">这次最接近哪种目的？</text>
+  <view class="mode-row">
+    <view
+      wx:for="{{modes}}"
+      wx:key="value"
+      class="mode-tab {{activeMode === item.value ? 'active' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="chooseMode"
+    >
+      {{item.label}}
     </view>
-    <view class="option-grid">
-      <view
-        wx:for="{{intents}}"
-        wx:key="value"
-        class="option-card card {{form.intent === item.value ? 'active' : ''}}"
-        data-value="{{item.value}}"
-        bindtap="chooseIntent"
-      >
-        {{item.label}}
+  </view>
+
+  <block wx:if="{{activeMode === 'decision'}}">
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">这次最接近哪种目的？</text>
+      </view>
+      <view class="option-grid">
+        <view
+          wx:for="{{intents}}"
+          wx:key="value"
+          class="option-card card {{form.intent === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="chooseIntent"
+        >
+          {{item.label}}
+        </view>
       </view>
     </view>
-  </view>
 
-  <view class="section">
-    <view class="section-header">
-      <text class="section-title">现在的冲动强度</text>
-      <text class="section-action">{{form.urgeLevel}} / 5</text>
-    </view>
-    <view class="level-row">
-      <view
-        wx:for="{{urgeLevels}}"
-        wx:key="*this"
-        class="level-dot {{form.urgeLevel === item ? 'active' : ''}}"
-        data-value="{{item}}"
-        bindtap="chooseUrgeLevel"
-      >
-        {{item}}
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">现在的冲动强度</text>
+        <text class="section-action">{{form.urgeLevel}} / 5</text>
+      </view>
+      <view class="level-row">
+        <view
+          wx:for="{{urgeLevels}}"
+          wx:key="*this"
+          class="level-dot {{form.urgeLevel === item ? 'active' : ''}}"
+          data-value="{{item}}"
+          bindtap="chooseUrgeLevel"
+        >
+          {{item}}
+        </view>
       </view>
     </view>
-  </view>
 
-  <view class="section">
-    <view class="field-card card">
-      <view>
-        <view class="field-title">有现实事务必须处理吗？</view>
-        <view class="field-desc">例如物品、账单、工作交接、共同事务。单纯想确认爱不爱，不算现实必要。</view>
-      </view>
-      <switch checked="{{form.hasPracticalReason}}" color="#2F6655" bindchange="onPracticalChange" />
-    </view>
-  </view>
-
-  <view class="section">
-    <view class="section-header">
-      <text class="section-title">你已经等了多久？</text>
-    </view>
-    <view class="option-grid">
-      <view
-        wx:for="{{waitOptions}}"
-        wx:key="value"
-        class="option-card card {{form.wait === item.value ? 'active' : ''}}"
-        data-value="{{item.value}}"
-        bindtap="chooseWait"
-      >
-        {{item.label}}
+    <view class="section">
+      <view class="field-card card">
+        <view>
+          <view class="field-title">有现实事务必须处理吗？</view>
+          <view class="field-desc">例如物品、账单、工作交接、共同事务。单纯想确认爱不爱，不算现实必要。</view>
+        </view>
+        <switch checked="{{form.hasPracticalReason}}" color="#2F6655" bindchange="onPracticalChange" />
       </view>
     </view>
-  </view>
 
-  <view class="section">
-    <view class="section-header">
-      <text class="section-title">把想发的话先写成草稿</text>
-      <text class="section-action">{{form.draft.length}} / 500</text>
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">你已经等了多久？</text>
+      </view>
+      <view class="option-grid">
+        <view
+          wx:for="{{waitOptions}}"
+          wx:key="value"
+          class="option-card card {{form.wait === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="chooseWait"
+        >
+          {{item.label}}
+        </view>
+      </view>
     </view>
-    <textarea
-      class="draft-input card"
-      value="{{form.draft}}"
-      maxlength="500"
-      placeholder="例如：我想问你为什么突然变冷淡，还是我只是想让你知道我现在很难受？"
-      bindinput="onDraftInput"
-    />
-    <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitDecision">先帮我判断一下</button>
-  </view>
 
-  <view wx:if="{{result}}" class="result-card card {{result.decision.level}}">
-    <view class="result-kicker">已记录 {{recordCount}} 次复盘</view>
-    <view class="result-title">{{result.decision.title}}</view>
-    <view class="result-summary">{{result.decision.summary}}</view>
-    <view class="result-next">下一步：{{result.decision.nextStep}}</view>
-    <view class="result-meta">目的：{{result.intentText}} · 冲动 {{result.urgeLevel}} / 5 · {{result.waitText}}</view>
-  </view>
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">把想发的话先写成草稿</text>
+        <text class="section-action">{{form.draft.length}} / 500</text>
+      </view>
+      <textarea
+        class="draft-input card"
+        value="{{form.draft}}"
+        maxlength="500"
+        placeholder="例如：我想问你为什么突然变冷淡，还是我只是想让你知道我现在很难受？"
+        bindinput="onDraftInput"
+      />
+      <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitDecision">先帮我判断一下</button>
+    </view>
+
+    <view wx:if="{{result}}" class="result-card card {{result.decision.level}}">
+      <view class="result-kicker">已记录 {{recordCount}} 次复盘</view>
+      <view class="result-title">{{result.decision.title}}</view>
+      <view class="result-summary">{{result.decision.summary}}</view>
+      <view class="result-next">下一步：{{result.decision.nextStep}}</view>
+      <view class="result-meta">目的：{{result.intentText}} · 冲动 {{result.urgeLevel}} / 5 · {{result.waitText}}</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeMode === 'relationship'}}">
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">关系里发生了什么？</text>
+        <text class="section-action">{{relationshipForm.event.length}} / 300</text>
+      </view>
+      <textarea
+        class="draft-input compact card"
+        value="{{relationshipForm.event}}"
+        maxlength="300"
+        placeholder="写一个具体事件：什么时候、发生了什么、你当时做了什么。"
+        data-key="event"
+        bindinput="onRelationshipInput"
+      />
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">选择最像的重复模式</text>
+      </view>
+      <view class="option-grid">
+        <view
+          wx:for="{{relationshipPatterns}}"
+          wx:key="value"
+          class="option-card pattern-card card {{relationshipForm.pattern === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="choosePattern"
+        >
+          <view class="option-title">{{item.label}}</view>
+          <view class="option-desc">{{item.summary}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="analysis-grid">
+        <view class="mini-field card">
+          <view class="field-title">我真正需要什么？</view>
+          <textarea class="mini-input" value="{{relationshipForm.myNeed}}" maxlength="160" placeholder="例如：确定感、被尊重、解释、结束感" data-key="myNeed" bindinput="onRelationshipInput" />
+        </view>
+        <view class="mini-field card">
+          <view class="field-title">TA 可能需要或不能给什么？</view>
+          <textarea class="mini-input" value="{{relationshipForm.taNeed}}" maxlength="160" placeholder="例如：空间、低冲突、明确边界" data-key="taNeed" bindinput="onRelationshipInput" />
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">责任和证据拆开看</text>
+      </view>
+      <textarea class="draft-input compact card" value="{{relationshipForm.responsibility}}" maxlength="220" placeholder="我能承担的部分是什么？不属于我的部分是什么？" data-key="responsibility" bindinput="onRelationshipInput" />
+      <textarea class="draft-input compact card stacked-input" value="{{relationshipForm.evidenceFor}}" maxlength="220" placeholder="支持联系/复合的具体证据，不写感觉，只写事实。" data-key="evidenceFor" bindinput="onRelationshipInput" />
+      <textarea class="draft-input compact card stacked-input" value="{{relationshipForm.evidenceAgainst}}" maxlength="220" placeholder="不支持联系/复合的具体证据，例如反复伤害、边界不稳。" data-key="evidenceAgainst" bindinput="onRelationshipInput" />
+      <textarea class="draft-input compact card stacked-input" value="{{relationshipForm.lesson}}" maxlength="220" placeholder="这段关系给我的一个结论：下次我会更重视什么？" data-key="lesson" bindinput="onRelationshipInput" />
+      <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitRelationshipReview">生成结构化复盘</button>
+    </view>
+
+    <view wx:if="{{relationshipResult}}" class="result-card card {{relationshipResult.insight.level}}">
+      <view class="result-kicker">已记录 {{recordCount}} 次复盘 · {{relationshipResult.patternText}}</view>
+      <view class="result-title">{{relationshipResult.insight.title}}</view>
+      <view class="result-summary">{{relationshipResult.insight.summary}}</view>
+      <view class="result-next">下一步：{{relationshipResult.insight.nextStep}}</view>
+      <view wx:for="{{relationshipResult.insight.questions}}" wx:key="*this" class="result-list-item">· {{item}}</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeMode === 'noContact'}}">
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">这次先断联多久？</text>
+      </view>
+      <view class="option-grid">
+        <view
+          wx:for="{{noContactDurations}}"
+          wx:key="value"
+          class="option-card card {{noContactForm.duration === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="chooseDuration"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">最容易破戒的时段</text>
+      </view>
+      <view class="option-grid">
+        <view
+          wx:for="{{riskWindows}}"
+          wx:key="value"
+          class="option-card card {{noContactForm.riskWindow === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="chooseRiskWindow"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">先做一个保护动作</text>
+      </view>
+      <view class="option-grid">
+        <view
+          wx:for="{{protectionActions}}"
+          wx:key="value"
+          class="option-card card {{noContactForm.protectionAction === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="chooseProtectionAction"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">断联目标和替代动作</text>
+      </view>
+      <textarea class="draft-input compact card" value="{{noContactForm.goal}}" maxlength="220" placeholder="我这次断联是为了什么？例如：让情绪降下来，不再靠 TA 的回应判断自己。" data-key="goal" bindinput="onNoContactInput" />
+      <textarea class="draft-input compact card stacked-input" value="{{noContactForm.replacement}}" maxlength="220" placeholder="冲动出现时具体做什么？例如：写到小队、洗澡、散步 10 分钟、找朋友。" data-key="replacement" bindinput="onNoContactInput" />
+      <input class="support-input card" value="{{noContactForm.supportPerson}}" maxlength="24" placeholder="可信赖的人，可选" data-key="supportPerson" bindinput="onNoContactInput" />
+      <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitNoContactPlan">生成断联计划</button>
+    </view>
+
+    <view wx:if="{{noContactResult}}" class="result-card card {{noContactResult.plan.level}}">
+      <view class="result-kicker">{{noContactResult.plan.startText}} 至 {{noContactResult.plan.endText}}</view>
+      <view class="result-title">{{noContactResult.plan.title}}</view>
+      <view class="result-summary">{{noContactResult.plan.summary}}</view>
+      <view wx:for="{{noContactResult.plan.rules}}" wx:key="*this" class="result-list-item">· {{item}}</view>
+      <view class="result-next">破戒预案：{{noContactResult.plan.relapsePlan}}</view>
+    </view>
+  </block>
 
   <view class="review-actions">
     <button class="secondary-button" bindtap="openSupport">先撑 10 分钟</button>
