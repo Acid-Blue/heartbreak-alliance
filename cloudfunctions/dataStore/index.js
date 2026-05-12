@@ -13,8 +13,10 @@ const COLLECTIONS = {
   agentMessages: "ha_agent_messages",
   urgeRecords: "ha_urge_records",
   reviewRecords: "ha_review_records",
-  settings: "ha_user_settings"
+  settings: "ha_user_settings",
+  users: "ha_users"
 };
+const PROFILE_STAGES = ["急性期", "复盘期", "孤独期", "重建期"];
 
 exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
@@ -73,6 +75,10 @@ async function runAction(action, payload, openId) {
       return getSetting(payload.key, payload.fallback, openId);
     case "setSetting":
       return setSetting(payload.key, payload.value, openId);
+    case "getUserProfile":
+      return getUserProfile(openId);
+    case "updateUserProfile":
+      return updateUserProfile(payload.profile, openId);
     default:
       throw new Error(`unsupported action: ${action}`);
   }
@@ -213,6 +219,92 @@ async function setSetting(key, value, openId) {
   return value;
 }
 
+async function getUserProfile(openId) {
+  const existing = await findUserProfile(openId);
+
+  if (existing) {
+    return normalizeRecord(existing);
+  }
+
+  return createUserProfile(defaultUserProfile(openId), openId);
+}
+
+async function updateUserProfile(profile, openId) {
+  const existing = await findUserProfile(openId);
+  const sanitized = sanitizeUserProfile(profile, openId);
+
+  if (existing) {
+    await db.collection(COLLECTIONS.users).doc(existing._id).update({
+      data: {
+        ...sanitized,
+        updatedAt: new Date().toISOString()
+      }
+    });
+    return normalizeRecord({
+      ...existing,
+      ...sanitized,
+      updatedAt: new Date().toISOString()
+    });
+  }
+
+  return createUserProfile(sanitized, openId);
+}
+
+async function findUserProfile(openId) {
+  const result = await db.collection(COLLECTIONS.users)
+    .where({
+      userOpenId: openId
+    })
+    .limit(1)
+    .get();
+  return result.data[0] || null;
+}
+
+async function createUserProfile(profile, openId) {
+  const data = {
+    ...profile,
+    userOpenId: openId,
+    createdAt: profile.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  const result = await db.collection(COLLECTIONS.users).add({ data });
+  return normalizeRecord({
+    ...data,
+    _id: result._id
+  });
+}
+
+function defaultUserProfile(openId) {
+  return {
+    id: openId,
+    nickname: "匿名队友",
+    avatar: "阵",
+    avatarUrl: "",
+    bio: "",
+    stage: "急性期",
+    isProfileAuthorized: false
+  };
+}
+
+function sanitizeUserProfile(profile, openId) {
+  const nextProfile = profile || {};
+  const nickname = String(nextProfile.nickname || "匿名队友").trim().slice(0, 24) || "匿名队友";
+  const avatar = String(nextProfile.avatar || nickname.slice(0, 1) || "阵").trim().slice(0, 2) || "阵";
+  const avatarUrl = String(nextProfile.avatarUrl || "").trim();
+  const bio = String(nextProfile.bio || "").trim().slice(0, 80);
+  const stage = PROFILE_STAGES.includes(nextProfile.stage) ? nextProfile.stage : "急性期";
+
+  return {
+    id: openId,
+    nickname,
+    avatar,
+    avatarUrl,
+    bio,
+    stage,
+    isProfileAuthorized: nextProfile.isProfileAuthorized === true
+  };
+}
+
 async function createRecord(collectionName, record, openId) {
   const createdAt = record.createdAt || new Date().toISOString();
   const data = {
@@ -249,5 +341,6 @@ function normalizeRecord(record) {
     id: record.id || record._id
   };
   delete nextRecord._openid;
+  delete nextRecord.userOpenId;
   return nextRecord;
 }

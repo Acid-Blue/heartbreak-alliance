@@ -12,7 +12,7 @@
 
 云函数边界已预留并实现，配置方式见 `docs/cloud-ai-setup.md`。
 
-- `cloudfunctions/dataStore`：用户生成数据的云数据库读写。
+- `cloudfunctions/dataStore`：个人资料和用户生成数据的云数据库读写。
 - `cloudfunctions/aiAgent`：服务端 AI 推理，API Key 仅放在云函数环境变量中。
 - 未配置 `CLOUD_ENV_ID` 时，小程序继续使用本地 mock 和 `wxStorage` 兜底。
 

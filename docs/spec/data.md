@@ -7,7 +7,12 @@
 - `id`: 用户 ID
 - `nickname`: 昵称
 - `avatar`: 头像占位
+- `avatarUrl`: 微信头像或云存储头像地址
+- `bio`: 个人备注
+- `stage`: 当前恢复阶段，`急性期` | `复盘期` | `孤独期` | `重建期`
 - `joinedCommunityIds`: 已加入阵线小队 ID
+- `isProfileAuthorized`: 是否已保存个性化资料
+- `isCloudUser`: 当前资料是否来自云端 OpenID 账户
 - `agentConsent`: 是否允许 Agent 参考本人内容和小队公开内容
 - `agentPermissions`: Agent 授权范围
 - `agentPermissions.ownContent`: 是否允许参考本人发布和回应
@@ -65,6 +70,7 @@
 ### ReviewRecord
 
 - `id`: 复盘记录 ID
+- `kind`: 记录类型，`contactDecision` | `relationshipReview` | `noContactPlan`
 - `intent`: 联系目的
 - `intentText`: 联系目的文案
 - `wait`: 已等待时长
@@ -73,6 +79,23 @@
 - `hasPracticalReason`: 是否有现实事务必要性
 - `draft`: 想联系 TA 的草稿
 - `decision`: 决策辅助结果
+- `pattern`: 关系重复模式
+- `patternText`: 关系重复模式文案
+- `event`: 关系事件描述
+- `myNeed`: 用户在关系中的核心需求
+- `taNeed`: 对方可能的需求或限制
+- `responsibility`: 责任边界复盘
+- `evidenceFor`: 支持联系/复合的证据
+- `evidenceAgainst`: 不支持联系/复合的证据
+- `lesson`: 用户带走的结论
+- `insight`: 结构化复盘结果
+- `duration`: 断联周期
+- `riskWindow`: 断联破戒高风险时段
+- `protectionAction`: 保护动作
+- `goal`: 断联目标
+- `replacement`: 冲动替代动作
+- `supportPerson`: 可选现实支持对象
+- `plan`: 断联计划结果
 - `hasSafetyRisk`: 是否命中安全提醒
 - `createdAt`: 创建时间
 
@@ -95,14 +118,20 @@
 - `supportService.detectSafetyRisk(value, reason)`
 - `reviewService.getReviewRecords()`
 - `reviewService.createContactDecision(payload)`
+- `reviewService.createRelationshipReview(payload)`
+- `reviewService.createNoContactPlan(payload)`
 - `cloudfunctions/dataStore`
 - `cloudfunctions/aiAgent`
 - `agentService.getAgentMessages()`
 - `agentService.buildAgentContext()`
 - `agentService.sendAgentMessage(payload)`
 - `userService.getCurrentUser()`
+- `userService.getUserProfile()`
 - `userService.getJoinedCommunities()`
 - `userService.getMyPosts()`
+- `userService.loginWithWeChatProfile()`
+- `userService.updateUserProfile(patch)`
+- `userService.logoutLocalProfile()`
 - `userService.updateAgentPermissions(patch)`
 
 ## Routes
@@ -122,3 +151,5 @@
 - `services/` 通过 `utils/cloudApi.js` 调用云函数。
 - `dataStore` 云函数负责云数据库读写。
 - `aiAgent` 云函数负责服务端 AI 推理，前端不保存 API Key。
+
+`dataStore` 当前使用集合：`ha_users`、`ha_posts`、`ha_comments`、`ha_agent_messages`、`ha_urge_records`、`ha_review_records`、`ha_user_settings`。用户资料通过 `getUserProfile` 和 `updateUserProfile` 读写，服务端以微信 OpenID 作为所有权边界。

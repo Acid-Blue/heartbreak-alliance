@@ -24,6 +24,30 @@
   line-height: 1.6;
 }
 
+.mode-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+  margin-top: 24rpx;
+}
+
+.mode-tab {
+  padding: 18rpx 8rpx;
+  border: 1rpx solid #e5d8c6;
+  border-radius: 999rpx;
+  background: #fffdf8;
+  color: #7c756c;
+  font-size: 24rpx;
+  font-weight: 800;
+  text-align: center;
+}
+
+.mode-tab.active {
+  border-color: #2f6655;
+  background: #2f6655;
+  color: #fffdf8;
+}
+
 .option-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -43,6 +67,28 @@
   border-color: #2f6655;
   background: #eff6f1;
   color: #2f6655;
+}
+
+.pattern-card {
+  min-height: 156rpx;
+  text-align: left;
+}
+
+.option-title {
+  font-size: 27rpx;
+  font-weight: 900;
+}
+
+.option-desc {
+  margin-top: 8rpx;
+  color: #7c756c;
+  font-size: 23rpx;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.pattern-card.active .option-desc {
+  color: #3d6f5f;
 }
 
 .level-row {
@@ -100,6 +146,42 @@
   line-height: 1.6;
 }
 
+.draft-input.compact {
+  min-height: 168rpx;
+}
+
+.stacked-input {
+  margin-top: 16rpx;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.mini-field {
+  padding: 22rpx;
+}
+
+.mini-input {
+  width: 100%;
+  min-height: 150rpx;
+  margin-top: 14rpx;
+  color: #2f2a25;
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.support-input {
+  width: 100%;
+  min-height: 82rpx;
+  margin-top: 16rpx;
+  padding: 0 24rpx;
+  color: #2f2a25;
+  font-size: 27rpx;
+}
+
 .submit-button {
   margin-top: 18rpx;
 }
@@ -115,6 +197,14 @@
 .result-card.safety {
   border-color: #e5b3a0;
   background: #fff4ef;
+}
+
+.result-card.plan,
+.result-card.prepare,
+.result-card.review,
+.result-card.wait {
+  border-color: #cce1d5;
+  background: #eff6f1;
 }
 
 .result-kicker {
@@ -146,6 +236,13 @@
   font-weight: 700;
 }
 
+.result-list-item {
+  margin-top: 10rpx;
+  color: #3c362f;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
 .result-meta {
   margin-top: 14rpx;
   color: #7c756c;
@@ -164,4 +261,11 @@
   padding-left: 12rpx;
   padding-right: 12rpx;
   font-size: 24rpx;
+}
+
+@media (max-width: 360px) {
+  .analysis-grid,
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
 }

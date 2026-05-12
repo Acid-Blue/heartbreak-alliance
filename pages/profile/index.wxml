@@ -4,14 +4,60 @@
 
   <block wx:else>
     <view class="profile-card card">
-      <view class="avatar">{{user.avatar}}</view>
+      <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image wx:if="{{profileForm.avatarUrl}}" class="avatar-image" src="{{profileForm.avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar">{{profileForm.avatar}}</view>
+      </button>
       <view class="profile-main">
-        <view class="nickname">{{user.nickname}}</view>
+        <input
+          class="nickname-input"
+          type="nickname"
+          maxlength="24"
+          value="{{profileForm.nickname}}"
+          placeholder="填写昵称"
+          bindinput="onNicknameInput"
+        />
+        <view class="profile-note">
+          {{user.isCloudUser ? '云端账户' : '本地访客'}} · {{user.isProfileAuthorized ? '已保存个人资料' : '可手动编辑资料'}}
+        </view>
         <view class="profile-note">已加入 {{joinedCommunities.length}} 个阵线小队</view>
       </view>
     </view>
 
     <view class="boundary">{{boundary}}</view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">个人资料</text>
+        <text class="section-action" bindtap="loginWithWeChat">同步微信资料</text>
+      </view>
+      <view class="profile-editor card">
+        <view class="field-label">当前阶段</view>
+        <view class="stage-row">
+          <view
+            wx:for="{{profileStages}}"
+            wx:key="*this"
+            class="stage-pill {{profileForm.stage === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="chooseStage"
+          >{{item}}</view>
+        </view>
+
+        <view class="field-label">个人备注</view>
+        <textarea
+          class="bio-input"
+          maxlength="80"
+          value="{{profileForm.bio}}"
+          placeholder="例如：最近晚上更容易想联系 TA"
+          bindinput="onBioInput"
+        />
+        <view class="profile-actions">
+          <button class="primary-button profile-save" loading="{{savingProfile}}" disabled="{{savingProfile}}" bindtap="saveProfile">保存资料</button>
+          <button class="secondary-button profile-reset" disabled="{{savingProfile}}" bindtap="resetLocalProfile">切回匿名资料</button>
+        </view>
+        <view class="profile-help">配置云环境后，资料会绑定当前微信 OpenID 并写入云数据库；未配置时仅保存在本机。</view>
+      </view>
+    </view>
 
     <view class="section">
       <view class="section-header">

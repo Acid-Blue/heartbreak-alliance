@@ -5,6 +5,26 @@
   padding: 28rpx;
 }
 
+.avatar-button {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 92rpx;
+  height: 92rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  line-height: 1;
+}
+
+.avatar-button::after,
+.profile-save::after,
+.profile-reset::after {
+  border: 0;
+}
+
 .avatar {
   display: flex;
   align-items: center;
@@ -18,11 +38,21 @@
   font-weight: 800;
 }
 
+.avatar-image {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  background: #eee3d1;
+}
+
 .profile-main {
+  flex: 1;
   min-width: 0;
 }
 
-.nickname {
+.nickname-input {
+  min-height: 46rpx;
+  color: #2f2a24;
   font-size: 34rpx;
   font-weight: 800;
 }
@@ -31,6 +61,87 @@
   margin-top: 8rpx;
   color: #7c756c;
   font-size: 24rpx;
+}
+
+.profile-editor {
+  padding: 24rpx;
+}
+
+.field-label {
+  margin-bottom: 14rpx;
+  color: #2f2a24;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.stage-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-bottom: 24rpx;
+}
+
+.stage-pill {
+  padding: 12rpx 22rpx;
+  border: 2rpx solid #e4d5bd;
+  border-radius: 999rpx;
+  background: #fffaf0;
+  color: #625c53;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.stage-pill.active {
+  border-color: #2f6655;
+  background: #e5f0e6;
+  color: #2f6655;
+}
+
+.bio-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 132rpx;
+  padding: 18rpx;
+  border: 2rpx solid #eadcc5;
+  border-radius: 22rpx;
+  background: #fffdf8;
+  color: #2f2a24;
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 22rpx;
+}
+
+.profile-save,
+.profile-reset {
+  flex: 1;
+  margin: 0;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+  line-height: 76rpx;
+}
+
+.profile-save {
+  background: #2f6655;
+  color: #fffdf8;
+}
+
+.profile-reset {
+  border: 2rpx solid #d8c7ad;
+  background: #fffaf0;
+  color: #625c53;
+}
+
+.profile-help {
+  margin-top: 18rpx;
+  color: #7c756c;
+  font-size: 23rpx;
+  line-height: 1.5;
 }
 
 .joined-row,
