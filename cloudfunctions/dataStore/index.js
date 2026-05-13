@@ -14,9 +14,11 @@ const COLLECTIONS = {
   urgeRecords: "ha_urge_records",
   reviewRecords: "ha_review_records",
   settings: "ha_user_settings",
-  users: "ha_users"
+  users: "ha_users",
+  reports: "ha_reports"
 };
 const PROFILE_STAGES = ["急性期", "复盘期", "孤独期", "重建期"];
+const COMMUNITY_IDS = ["squad-001", "squad-002", "squad-003"];
 
 exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
@@ -79,6 +81,10 @@ async function runAction(action, payload, openId) {
       return getUserProfile(openId);
     case "updateUserProfile":
       return updateUserProfile(payload.profile, openId);
+    case "listMyReports":
+      return listMyRecords(COLLECTIONS.reports, openId);
+    case "createReport":
+      return createRecord(COLLECTIONS.reports, sanitizeReport(payload.report), openId);
     default:
       throw new Error(`unsupported action: ${action}`);
   }
@@ -282,6 +288,7 @@ function defaultUserProfile(openId) {
     avatarUrl: "",
     bio: "",
     stage: "急性期",
+    joinedCommunityIds: ["squad-001", "squad-002"],
     isProfileAuthorized: false
   };
 }
@@ -293,6 +300,7 @@ function sanitizeUserProfile(profile, openId) {
   const avatarUrl = String(nextProfile.avatarUrl || "").trim();
   const bio = String(nextProfile.bio || "").trim().slice(0, 80);
   const stage = PROFILE_STAGES.includes(nextProfile.stage) ? nextProfile.stage : "急性期";
+  const joinedCommunityIds = sanitizeCommunityIds(nextProfile.joinedCommunityIds);
 
   return {
     id: openId,
@@ -301,7 +309,39 @@ function sanitizeUserProfile(profile, openId) {
     avatarUrl,
     bio,
     stage,
+    joinedCommunityIds,
     isProfileAuthorized: nextProfile.isProfileAuthorized === true
+  };
+}
+
+function sanitizeCommunityIds(value) {
+  if (!Array.isArray(value)) {
+    return ["squad-001", "squad-002"];
+  }
+
+  return Array.from(new Set(value.filter((id) => COMMUNITY_IDS.includes(id))));
+}
+
+function sanitizeReport(report) {
+  const nextReport = report || {};
+  const targetType = ["post", "comment"].includes(nextReport.targetType) ? nextReport.targetType : "post";
+  const reason = String(nextReport.reason || "other").trim().slice(0, 32) || "other";
+  const reasonText = String(nextReport.reasonText || "其他问题").trim().slice(0, 32) || "其他问题";
+  const targetId = String(nextReport.targetId || "").trim().slice(0, 80);
+
+  if (!targetId) {
+    throw new Error("missing report target");
+  }
+
+  return {
+    id: String(nextReport.id || "").trim().slice(0, 80),
+    targetType,
+    targetId,
+    reason,
+    reasonText,
+    description: String(nextReport.description || "").trim().slice(0, 200),
+    status: "pending",
+    createdAt: nextReport.createdAt || new Date().toISOString()
   };
 }
 

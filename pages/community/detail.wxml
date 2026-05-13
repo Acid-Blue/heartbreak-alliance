@@ -11,6 +11,12 @@
       </view>
       <view class="detail-meta">{{community.memberCount}} 人 · 今日 {{community.activeToday}} 人在场 · {{community.mood}}</view>
       <view class="detail-actions">
+        <button
+          class="secondary-button action-button"
+          loading="{{joining}}"
+          disabled="{{joining}}"
+          bindtap="toggleJoin"
+        >{{community.isJoined ? '退出小队' : '加入小队'}}</button>
         <button class="primary-button action-button" bindtap="openPublish">发布到小队</button>
         <button class="secondary-button action-button" bindtap="openAgent">找 Agent 复盘</button>
       </view>

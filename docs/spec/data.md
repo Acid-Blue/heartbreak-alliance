@@ -28,6 +28,17 @@
 - `mood`: 小队当前氛围
 - `isJoined`: 是否加入
 
+### Report
+
+- `id`: 举报记录 ID
+- `targetType`: 举报对象类型，`post` | `comment`
+- `targetId`: 举报对象 ID
+- `reason`: 举报原因
+- `reasonText`: 举报原因文案
+- `description`: 可选补充说明
+- `status`: 处理状态，默认 `pending`
+- `createdAt`: 创建时间
+
 ### Post
 
 - `id`: 帖子 ID
@@ -106,6 +117,9 @@
 - `communityService.getCommunities()`
 - `communityService.getFeaturedCommunities()`
 - `communityService.getCommunity(id)`
+- `communityService.searchCommunities(query)`
+- `communityService.joinCommunity(id)`
+- `communityService.leaveCommunity(id)`
 - `postService.getFeed()`
 - `postService.getPost(id)`
 - `postService.getPostsByCommunity(communityId)`
@@ -116,6 +130,8 @@
 - `supportService.getUrgeRecords()`
 - `supportService.createUrgeRecord(payload)`
 - `supportService.detectSafetyRisk(value, reason)`
+- `reportService.getReports()`
+- `reportService.createReport(payload)`
 - `reviewService.getReviewRecords()`
 - `reviewService.createContactDecision(payload)`
 - `reviewService.createRelationshipReview(payload)`
@@ -152,4 +168,4 @@
 - `dataStore` 云函数负责云数据库读写。
 - `aiAgent` 云函数负责服务端 AI 推理，前端不保存 API Key。
 
-`dataStore` 当前使用集合：`ha_users`、`ha_posts`、`ha_comments`、`ha_agent_messages`、`ha_urge_records`、`ha_review_records`、`ha_user_settings`。用户资料通过 `getUserProfile` 和 `updateUserProfile` 读写，服务端以微信 OpenID 作为所有权边界。
+`dataStore` 当前使用集合：`ha_users`、`ha_posts`、`ha_comments`、`ha_agent_messages`、`ha_urge_records`、`ha_review_records`、`ha_user_settings`、`ha_reports`。用户资料通过 `getUserProfile` 和 `updateUserProfile` 读写，服务端以微信 OpenID 作为所有权边界。

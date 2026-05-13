@@ -8,7 +8,8 @@ Page({
     error: "",
     communityId: "",
     community: null,
-    posts: []
+    posts: [],
+    joining: false
   },
 
   onLoad(options) {
@@ -73,6 +74,36 @@ Page({
 
     wx.navigateTo({
       url: `/pages/publish/index?communityId=${this.data.communityId}`
+    });
+  },
+
+  toggleJoin() {
+    if (!this.data.community || this.data.joining) return;
+
+    const joined = this.data.community.isJoined;
+    const action = joined ? communityService.leaveCommunity : communityService.joinCommunity;
+
+    this.setData({
+      joining: true
+    });
+
+    action(this.data.communityId).then((community) => {
+      this.setData({
+        community,
+        joining: false
+      });
+      wx.showToast({
+        title: joined ? "已退出小队" : "已加入小队",
+        icon: "success"
+      });
+    }).catch(() => {
+      this.setData({
+        joining: false
+      });
+      wx.showToast({
+        title: "操作失败",
+        icon: "none"
+      });
     });
   },
 

@@ -13,6 +13,9 @@
         <text>{{post.authorName}} · {{post.emotion}}</text>
         <text>{{post.commentCount}} 条回应</text>
       </view>
+      <view class="post-tools">
+        <text class="report-link" bindtap="reportPost">举报这条内容</text>
+      </view>
       <view wx:if="{{community}}" class="community-link" bindtap="openCommunity">
         {{community.name}} · {{post.visibility}}
       </view>
@@ -29,7 +32,10 @@
       <view wx:for="{{comments}}" wx:key="id" class="comment-row card">
         <view class="comment-top">
           <text class="comment-author">{{item.authorName}}</text>
-          <text class="comment-time">{{item.relativeTime}}</text>
+          <view class="comment-meta">
+            <text class="comment-time">{{item.relativeTime}}</text>
+            <text class="report-link" data-id="{{item.id}}" bindtap="reportComment">举报</text>
+          </view>
         </view>
         <view class="comment-content">{{item.content}}</view>
       </view>

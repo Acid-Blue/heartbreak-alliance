@@ -10,6 +10,28 @@
   line-height: 1.6;
 }
 
+.search-card {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 24rpx;
+  padding: 18rpx 22rpx;
+}
+
+.search-input {
+  flex: 1;
+  min-height: 48rpx;
+  color: #2f2a25;
+  font-size: 27rpx;
+}
+
+.search-clear {
+  flex: 0 0 auto;
+  color: #2f6655;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
 .community-list {
   margin-top: 28rpx;
 }
@@ -39,6 +61,7 @@
   background: #fff7df;
   color: #8b6421;
   font-size: 22rpx;
+  font-weight: 800;
 }
 
 .join-state.joined {

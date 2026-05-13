@@ -5,6 +5,7 @@
 .post-top,
 .post-footer,
 .comment-top,
+.comment-meta,
 .comment-actions {
   display: flex;
   align-items: center;
@@ -24,6 +25,21 @@
 .input-count {
   color: #7c756c;
   font-size: 24rpx;
+}
+
+.post-tools {
+  margin-top: 16rpx;
+  text-align: right;
+}
+
+.comment-meta {
+  flex: 0 0 auto;
+}
+
+.report-link {
+  color: #9b3f2f;
+  font-size: 23rpx;
+  font-weight: 700;
 }
 
 .post-content {

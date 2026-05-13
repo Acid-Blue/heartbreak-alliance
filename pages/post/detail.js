@@ -1,5 +1,6 @@
 const communityService = require("../../services/communityService");
 const postService = require("../../services/postService");
+const reportService = require("../../services/reportService");
 const { formatRelativeTime } = require("../../utils/format");
 
 Page({
@@ -12,6 +13,7 @@ Page({
     comments: [],
     commentInput: "",
     submitting: false,
+    reporting: false,
     boundary: getApp().globalData.serviceBoundary
   },
 
@@ -133,6 +135,63 @@ Page({
       });
       wx.showToast({
         title: "回应失败，请稍后再试",
+        icon: "none"
+      });
+    });
+  },
+
+  reportPost() {
+    if (!this.data.post) return;
+
+    this.chooseReportReason({
+      targetType: "post",
+      targetId: this.data.post.id
+    });
+  },
+
+  reportComment(event) {
+    const { id } = event.currentTarget.dataset;
+
+    this.chooseReportReason({
+      targetType: "comment",
+      targetId: id
+    });
+  },
+
+  chooseReportReason(target) {
+    if (this.data.reporting) return;
+
+    wx.showActionSheet({
+      itemList: reportService.reportReasons.map((reason) => reason.label),
+      success: (response) => {
+        const reason = reportService.reportReasons[response.tapIndex] || reportService.reportReasons[0];
+        this.submitReport({
+          ...target,
+          reason: reason.value
+        });
+      }
+    });
+  },
+
+  submitReport(payload) {
+    this.setData({
+      reporting: true
+    });
+
+    reportService.createReport(payload).then(() => {
+      this.setData({
+        reporting: false
+      });
+      wx.showToast({
+        title: "已提交举报",
+        icon: "success"
+      });
+    }).catch(() => {
+      this.setData({
+        reporting: false
+      });
+      wx.showToast({
+        title: "提交失败",
         icon: "none"
       });
     });

@@ -6,11 +6,12 @@ This repository is a native WeChat Mini Program MVP. App entry files live at the
 
 ## Build, Test, and Development Commands
 
-There is no `package.json` or npm workflow in this repo. Use WeChat Developer Tools for local development:
+Use WeChat Developer Tools for local development:
 
 - Import this directory as a Mini Program project.
 - Use `project.config.json` for AppID, compiler, and upload settings.
 - Run the simulator/preview from WeChat Developer Tools after edits.
+- Run `npm test` for repository checks, JS syntax validation, page asset checks, and service-layer smoke tests.
 
 For quick repository inspection, use shell commands such as `git status --short` and `rg "term" pages services utils`.
 
@@ -20,7 +21,7 @@ Use CommonJS modules (`require`, `module.exports`) and modern JavaScript syntax 
 
 ## Testing Guidelines
 
-No automated test framework is currently configured. Validate changes manually in WeChat Developer Tools. At minimum, smoke test affected pages, tab navigation, `wx.navigateTo`/`wx.switchTab` routes, post creation, comment creation, and local storage behavior. For UI changes, check simulator layouts for common mobile widths and verify that WXML bindings render empty, loading, and error states correctly.
+Run `npm test` before committing. It checks JavaScript syntax, JSON parsing, Mini Program page/icon files, and service smoke coverage for profile, community membership/search, posting, comments, reports, urge records, and review records. Also validate visible UI changes manually in WeChat Developer Tools.
 
 ## Commit & Pull Request Guidelines
 

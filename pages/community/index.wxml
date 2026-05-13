@@ -2,11 +2,21 @@
   <view class="page-title">阵线小队</view>
   <view class="page-intro">固定小队更像读书会：持续在场、慢慢熟悉、一起把混乱的日子整理清楚。</view>
 
+  <view class="search-card card">
+    <input
+      class="search-input"
+      value="{{query}}"
+      placeholder="搜索小队、主题或标签"
+      bindinput="onSearchInput"
+    />
+    <text wx:if="{{query}}" class="search-clear" bindtap="clearSearch">清除</text>
+  </view>
+
   <view wx:if="{{loading}}" class="empty">正在加载阵线小队...</view>
   <view wx:elif="{{error}}" class="empty card" bindtap="loadCommunities">{{error}}</view>
 
   <view wx:else class="community-list">
-    <view wx:if="{{communities.length === 0}}" class="empty card">暂时没有开放的小队。</view>
+    <view wx:if="{{communities.length === 0}}" class="empty card">没有找到匹配的小队。</view>
     <view
       wx:for="{{communities}}"
       wx:key="id"
@@ -16,7 +26,12 @@
     >
       <view class="row-head">
         <view class="row-title">{{item.name}}</view>
-        <view class="join-state {{item.isJoined ? 'joined' : ''}}">{{item.isJoined ? '已加入' : '可加入'}}</view>
+        <view
+          class="join-state {{item.isJoined ? 'joined' : ''}}"
+          data-id="{{item.id}}"
+          data-joined="{{item.isJoined ? '1' : '0'}}"
+          catchtap="toggleJoin"
+        >{{item.isJoined ? '已加入' : '加入'}}</view>
       </view>
       <view class="row-summary">{{item.summary}}</view>
       <view class="pill-row">
