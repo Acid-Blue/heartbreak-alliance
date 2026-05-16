@@ -1,0 +1,24 @@
+<view class="page moderation-page">
+  <view class="page-title">内容治理</view>
+  <view class="page-intro">查看本机提交的举报记录，并标记处理状态。生产环境仍需要云端权限和运营流程。</view>
+
+  <view wx:if="{{loading}}" class="empty">正在加载举报记录...</view>
+  <view wx:elif="{{error}}" class="empty card" bindtap="loadReports">{{error}}</view>
+
+  <block wx:else>
+    <view wx:if="{{reports.length === 0}}" class="empty card">还没有举报记录。</view>
+    <view wx:for="{{reports}}" wx:key="id" class="report-card card">
+      <view class="report-top">
+        <text class="report-reason">{{item.reasonText}}</text>
+        <text class="report-status">{{item.statusText}}</text>
+      </view>
+      <view class="report-meta">{{item.targetText}} · {{item.relativeTime}}</view>
+      <view wx:if="{{item.description}}" class="report-desc">{{item.description}}</view>
+      <view class="report-actions">
+        <button class="secondary-button report-button" data-id="{{item.id}}" data-status="reviewing" bindtap="markReport">处理中</button>
+        <button class="primary-button report-button" data-id="{{item.id}}" data-status="resolved" bindtap="markReport">已处理</button>
+        <button class="secondary-button report-button" data-id="{{item.id}}" data-status="dismissed" bindtap="markReport">不处理</button>
+      </view>
+    </view>
+  </block>
+</view>

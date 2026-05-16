@@ -46,6 +46,12 @@
         <text class="section-title">写回应</text>
       </view>
       <view class="comment-composer card">
+        <view class="reply-guide">
+          <view class="reply-guide-title">回应提示</view>
+          <view class="reply-template-row">
+            <text wx:for="{{responseTemplates}}" wx:key="*this" class="reply-template" data-text="{{item}}" bindtap="chooseResponseTemplate">{{item}}</text>
+          </view>
+        </view>
         <textarea
           class="comment-input"
           value="{{commentInput}}"
@@ -53,6 +59,7 @@
           placeholder="写一句具体、克制、能被接住的回应"
           bindinput="onCommentInput"
         />
+        <view wx:if="{{commentNotice}}" class="comment-notice">{{commentNotice}}</view>
         <view class="comment-actions">
           <text class="input-count">{{commentInput.length}} / 300</text>
           <button class="primary-button comment-button" loading="{{submitting}}" bindtap="submitComment">回应</button>

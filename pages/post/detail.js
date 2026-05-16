@@ -1,6 +1,7 @@
 const communityService = require("../../services/communityService");
 const postService = require("../../services/postService");
 const reportService = require("../../services/reportService");
+const moderationService = require("../../services/moderationService");
 const { formatRelativeTime } = require("../../utils/format");
 
 Page({
@@ -11,7 +12,9 @@ Page({
     post: null,
     community: null,
     comments: [],
+    responseTemplates: moderationService.responseTemplates,
     commentInput: "",
+    commentNotice: "",
     submitting: false,
     reporting: false,
     boundary: getApp().globalData.serviceBoundary
@@ -93,8 +96,21 @@ Page({
   },
 
   onCommentInput(event) {
+    const value = event.detail.value;
+    const moderation = moderationService.detectModeration(value);
     this.setData({
-      commentInput: event.detail.value
+      commentInput: value,
+      commentNotice: moderation.notice
+    });
+  },
+
+  chooseResponseTemplate(event) {
+    const { text } = event.currentTarget.dataset;
+    const prefix = this.data.commentInput ? `${this.data.commentInput}\n${text}` : text;
+    const moderation = moderationService.detectModeration(prefix);
+    this.setData({
+      commentInput: prefix,
+      commentNotice: moderation.notice
     });
   },
 
@@ -119,10 +135,25 @@ Page({
       postId: this.data.postId,
       content
     }).then(({ comment, post }) => {
+      if (comment.moderationStatus === "review") {
+        this.setData({
+          post: this.decoratePost(post),
+          commentInput: "",
+          commentNotice: comment.moderationNotice,
+          submitting: false
+        });
+        wx.showToast({
+          title: "回应已进入审核",
+          icon: "none"
+        });
+        return;
+      }
+
       this.setData({
         post: this.decoratePost(post),
         comments: this.decorateComments([comment]).concat(this.data.comments),
         commentInput: "",
+        commentNotice: "",
         submitting: false
       });
       wx.showToast({
@@ -186,6 +217,7 @@ Page({
         title: "已提交举报",
         icon: "success"
       });
+      this.loadDetail();
     }).catch(() => {
       this.setData({
         reporting: false

@@ -25,6 +25,49 @@
   line-height: 1.45;
 }
 
+.stage-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.stage-tag,
+.match-tag {
+  min-height: 44rpx;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #f4efe4;
+  color: #625c53;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.match-tag {
+  background: #eff6f1;
+  color: #2f6655;
+}
+
+.template-card {
+  margin-top: 20rpx;
+  padding: 18rpx;
+  border-radius: 8rpx;
+  background: #f8f2e8;
+}
+
+.template-title {
+  color: #8b6421;
+  font-size: 24rpx;
+  font-weight: 900;
+}
+
+.template-content {
+  margin-top: 8rpx;
+  color: #625c53;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
 .detail-actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -44,6 +87,53 @@
 .post-card {
   margin-bottom: 18rpx;
   padding: 24rpx;
+}
+
+.checkin-composer,
+.checkin-row,
+.guideline-card {
+  margin-bottom: 18rpx;
+  padding: 22rpx;
+}
+
+.checkin-input {
+  width: 100%;
+  min-height: 150rpx;
+  color: #2f2a25;
+  font-size: 27rpx;
+  line-height: 1.55;
+}
+
+.checkin-button {
+  margin-top: 16rpx;
+  min-height: 74rpx;
+  font-size: 26rpx;
+}
+
+.checkin-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.checkin-author {
+  color: #2f6655;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.checkin-time {
+  color: #7c756c;
+  font-size: 23rpx;
+}
+
+.checkin-content,
+.guideline-row {
+  margin-top: 10rpx;
+  color: #3c362f;
+  font-size: 25rpx;
+  line-height: 1.55;
 }
 
 .post-top,

@@ -1,6 +1,6 @@
 # 云持久化与 AI 推理接入
 
-最后更新：2026-05-13
+最后更新：2026-05-16
 
 ## 当前结论
 
@@ -31,10 +31,12 @@
    - `ha_posts`
    - `ha_comments`
    - `ha_agent_messages`
-   - `ha_urge_records`
-   - `ha_review_records`
-   - `ha_user_settings`
-   - `ha_reports`
+	   - `ha_urge_records`
+	   - `ha_review_records`
+	   - `ha_rebuild_records`
+	   - `ha_community_checkins`
+	   - `ha_user_settings`
+	   - `ha_reports`
 
 ## 数据持久化范围
 
@@ -45,9 +47,11 @@
 - 用户提交的回应。
 - Agent 对话消息。
 - Agent 权限设置。
-- 急性期冲动缓冲记录。
-- 联系判断、结构化关系复盘和断联计划记录。
-- 用户提交的举报记录。
+- 安全计划和急性期冲动缓冲记录。
+- 联系判断、结构化关系复盘、断联计划、行动计划和进度打卡记录。
+- 生活重建计划和恢复进度记录。
+- 阶段性小队打卡记录。
+- 用户提交的举报记录和处理状态。
 
 仍使用 mock 种子数据：
 
@@ -68,7 +72,7 @@ Agent 发送消息时：
 ## 验证建议
 
 - 未配置云环境时，确认小程序仍可本地运行。
-- 配置云环境后，保存个人资料、发布帖子、回应、Agent 消息、冲动缓冲、联系判断、结构化关系复盘、断联计划和举报记录应写入云数据库。
+- 配置云环境后，保存个人资料、发布帖子、回应、Agent 消息、安全计划、冲动缓冲、联系判断、结构化关系复盘、断联计划、行动追踪、生活重建、小队打卡和举报记录应写入云数据库。
 - 重新安装或清理本地缓存后，云端数据仍应能恢复。
 - 移除或填错 `OPENAI_API_KEY` 时，Agent 应回退到 mock 回复。
 - 配置正确 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_MODEL` 后，Agent 回复来源应显示 `AI推理 · ...`。

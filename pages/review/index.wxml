@@ -173,7 +173,7 @@
     </view>
   </block>
 
-  <block wx:elif="{{activeMode === 'noContact'}}">
+	  <block wx:elif="{{activeMode === 'noContact'}}">
     <view class="section">
       <view class="section-header">
         <text class="section-title">这次先断联多久？</text>
@@ -241,10 +241,111 @@
       <view class="result-summary">{{noContactResult.plan.summary}}</view>
       <view wx:for="{{noContactResult.plan.rules}}" wx:key="*this" class="result-list-item">· {{item}}</view>
       <view class="result-next">破戒预案：{{noContactResult.plan.relapsePlan}}</view>
-    </view>
-  </block>
+	    </view>
+	  </block>
 
-  <view class="review-actions">
+	  <block wx:elif="{{activeMode === 'progress'}}">
+	    <view wx:if="{{actionDashboard}}" class="section">
+	      <view class="section-header">
+	        <text class="section-title">周期回顾</text>
+	        <text class="section-action">最近 7 天</text>
+	      </view>
+	      <view class="dashboard-card card">
+	        <view class="dashboard-title">{{actionDashboard.weeklyReview.title}}</view>
+	        <view class="dashboard-summary">{{actionDashboard.weeklyReview.summary}}</view>
+	        <view class="dashboard-next">{{actionDashboard.weeklyReview.nextStep}}</view>
+	      </view>
+	    </view>
+
+	    <view class="section">
+	      <view class="section-header">
+	        <text class="section-title">把复盘变成 1 个动作</text>
+	      </view>
+	      <view class="option-grid">
+	        <view
+	          wx:for="{{actionFocusOptions}}"
+	          wx:key="value"
+	          class="option-card pattern-card card {{actionForm.focus === item.value ? 'active' : ''}}"
+	          data-value="{{item.value}}"
+	          bindtap="chooseActionFocus"
+	        >
+	          <view class="option-title">{{item.label}}</view>
+	          <view class="option-desc">{{item.taskHint}}</view>
+	        </view>
+	      </view>
+	      <textarea class="draft-input compact card stacked-input" value="{{actionForm.nextAction}}" maxlength="180" placeholder="今天只做的一步，例如：睡前不看 TA 动态，改写到暂存。" data-key="nextAction" bindinput="onActionInput" />
+	      <textarea class="draft-input compact card stacked-input" value="{{actionForm.supportAction}}" maxlength="180" placeholder="需要支持时找谁、去哪里、做什么？可选。" data-key="supportAction" bindinput="onActionInput" />
+	      <textarea class="draft-input compact card stacked-input" value="{{actionForm.blocker}}" maxlength="180" placeholder="最可能卡住的点，可选。" data-key="blocker" bindinput="onActionInput" />
+	      <view class="review-day-row">
+	        <view class="review-day {{actionForm.reviewAfterDays === 1 ? 'active' : ''}}" data-value="1" bindtap="chooseReviewDays">1 天后回看</view>
+	        <view class="review-day {{actionForm.reviewAfterDays === 3 ? 'active' : ''}}" data-value="3" bindtap="chooseReviewDays">3 天后回看</view>
+	        <view class="review-day {{actionForm.reviewAfterDays === 7 ? 'active' : ''}}" data-value="7" bindtap="chooseReviewDays">7 天后回看</view>
+	      </view>
+	      <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitActionPlan">生成行动计划</button>
+	    </view>
+
+	    <view wx:if="{{actionResult}}" class="result-card card {{actionResult.plan.level}}">
+	      <view class="result-kicker">{{actionResult.focusText}}</view>
+	      <view class="result-title">{{actionResult.plan.title}}</view>
+	      <view class="result-summary">{{actionResult.plan.summary}}</view>
+	      <view wx:for="{{actionResult.plan.tasks}}" wx:key="*this" class="result-list-item">· {{item}}</view>
+	      <view class="result-next">{{actionResult.plan.reviewText}}</view>
+	    </view>
+
+	    <view class="section">
+	      <view class="section-header">
+	        <text class="section-title">记录今天的执行</text>
+	      </view>
+	      <view class="option-grid">
+	        <view
+	          wx:for="{{progressStates}}"
+	          wx:key="value"
+	          class="option-card card {{progressForm.state === item.value ? 'active' : ''}}"
+	          data-value="{{item.value}}"
+	          bindtap="chooseProgressState"
+	        >
+	          {{item.label}}
+	        </view>
+	      </view>
+	      <view class="section-header progress-level-header">
+	        <text class="section-title small">联系冲动强度</text>
+	        <text class="section-action">{{progressForm.urgeLevel}} / 5</text>
+	      </view>
+	      <view class="level-row">
+	        <view
+	          wx:for="{{urgeLevels}}"
+	          wx:key="*this"
+	          class="level-dot {{progressForm.urgeLevel === item ? 'active' : ''}}"
+	          data-value="{{item}}"
+	          bindtap="chooseProgressUrgeLevel"
+	        >
+	          {{item}}
+	        </view>
+	      </view>
+	      <textarea class="draft-input compact card stacked-input" value="{{progressForm.completedAction}}" maxlength="160" placeholder="今天完成了什么？" data-key="completedAction" bindinput="onProgressInput" />
+	      <textarea class="draft-input compact card stacked-input" value="{{progressForm.note}}" maxlength="180" placeholder="触发点、有效动作或需要调整的地方。" data-key="note" bindinput="onProgressInput" />
+	      <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitProgressCheckin">记录进度</button>
+	    </view>
+
+	    <view wx:if="{{progressResult}}" class="result-card card {{progressResult.summary.level}}">
+	      <view class="result-kicker">{{progressResult.stateText}} · 冲动 {{progressResult.urgeLevel}} / 5</view>
+	      <view class="result-title">{{progressResult.summary.title}}</view>
+	      <view class="result-summary">{{progressResult.summary.summary}}</view>
+	      <view class="result-next">下一步：{{progressResult.summary.nextStep}}</view>
+	    </view>
+
+	    <view wx:if="{{actionDashboard && actionDashboard.plans.length > 0}}" class="section">
+	      <view class="section-header">
+	        <text class="section-title">最近计划</text>
+	      </view>
+	      <view wx:for="{{actionDashboard.plans}}" wx:key="id" class="mini-record card">
+	        <view class="mini-record-title">{{item.kind === 'noContactPlan' ? item.durationText : item.focusText}}</view>
+	        <view class="mini-record-content">{{item.kind === 'noContactPlan' ? item.plan.summary : item.plan.summary}}</view>
+	      </view>
+	    </view>
+	  </block>
+
+	  <view class="review-actions">
     <button class="secondary-button" bindtap="openSupport">先撑 10 分钟</button>
     <button class="secondary-button" bindtap="openAgent">找 Agent 继续复盘</button>
   </view>

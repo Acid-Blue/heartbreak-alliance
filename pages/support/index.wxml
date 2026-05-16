@@ -12,9 +12,21 @@
     <view class="safety-content">请先联系身边可信赖的人，或立即联系当地紧急救助渠道。这里提供情绪支持，不能替代紧急救助。</view>
   </view>
 
+  <view wx:if="{{isNightMode}}" class="night-card card">
+    <view class="night-title">深夜模式</view>
+    <view class="night-content">今晚先降低刺激，只处理接下来的 10 分钟。</view>
+    <view wx:for="{{nightSteps}}" wx:key="*this" class="night-step">{{index + 1}}. {{item}}</view>
+  </view>
+
   <view wx:if="{{safetyNotice}}" class="risk-card card">
     <view class="risk-title">先处理安全，不要独自硬撑</view>
     <view class="risk-content">{{safetyNotice}}</view>
+    <view wx:if="{{safetyPlan.contactName || safetyPlan.safePlace}}" class="risk-plan">
+      <view wx:if="{{safetyPlan.contactName}}">可信赖的人：{{safetyPlan.contactName}}</view>
+      <view wx:if="{{safetyPlan.safePlace}}">先去的位置：{{safetyPlan.safePlace}}</view>
+      <view wx:if="{{safetyPlan.groundingAction}}">稳定动作：{{safetyPlan.groundingAction}}</view>
+      <button wx:if="{{safetyPlan.contactPhone}}" class="secondary-button call-button" bindtap="callSafetyContact">联系 {{safetyPlan.contactName || '安全联系人'}}</button>
+    </view>
   </view>
 
   <view class="section">
@@ -93,6 +105,20 @@
         <view class="step-index">{{index + 1}}</view>
         <view class="step-content">{{item}}</view>
       </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">安全计划</text>
+      <text class="section-action">本机可恢复</text>
+    </view>
+    <view class="safety-plan card">
+      <input class="plan-input" value="{{safetyPlanForm.contactName}}" maxlength="24" placeholder="可信赖的人" data-key="contactName" bindinput="onSafetyPlanInput" />
+      <input class="plan-input" value="{{safetyPlanForm.contactPhone}}" maxlength="24" placeholder="联系人电话，可选" data-key="contactPhone" bindinput="onSafetyPlanInput" />
+      <input class="plan-input" value="{{safetyPlanForm.safePlace}}" maxlength="60" placeholder="安全地点，例如客厅、楼下便利店" data-key="safePlace" bindinput="onSafetyPlanInput" />
+      <textarea class="plan-textarea" value="{{safetyPlanForm.groundingAction}}" maxlength="120" placeholder="能让身体先稳定的一件事" data-key="groundingAction" bindinput="onSafetyPlanInput" />
+      <button class="secondary-button plan-save" loading="{{savingSafetyPlan}}" bindtap="saveSafetyPlan">保存安全计划</button>
     </view>
   </view>
 

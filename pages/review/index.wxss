@@ -26,7 +26,7 @@
 
 .mode-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12rpx;
   margin-top: 24rpx;
 }
@@ -137,6 +137,10 @@
   line-height: 1.5;
 }
 
+.section-title.small {
+  font-size: 27rpx;
+}
+
 .draft-input {
   width: 100%;
   min-height: 260rpx;
@@ -184,6 +188,64 @@
 
 .submit-button {
   margin-top: 18rpx;
+}
+
+.dashboard-card,
+.mini-record {
+  padding: 24rpx;
+}
+
+.dashboard-title,
+.mini-record-title {
+  color: #2f6655;
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.dashboard-summary,
+.dashboard-next,
+.mini-record-content {
+  margin-top: 10rpx;
+  color: #3c362f;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.dashboard-next {
+  font-weight: 700;
+}
+
+.review-day-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.review-day {
+  min-height: 64rpx;
+  padding: 16rpx 8rpx;
+  border: 1rpx solid #e5d8c6;
+  border-radius: 8rpx;
+  background: #fffdf8;
+  color: #625c53;
+  font-size: 23rpx;
+  font-weight: 800;
+  text-align: center;
+}
+
+.review-day.active {
+  border-color: #2f6655;
+  background: #eff6f1;
+  color: #2f6655;
+}
+
+.progress-level-header {
+  margin-top: 22rpx;
+}
+
+.mini-record {
+  margin-bottom: 16rpx;
 }
 
 .result-card {
@@ -265,7 +327,9 @@
 
 @media (max-width: 360px) {
   .analysis-grid,
-  .option-grid {
+  .option-grid,
+  .mode-row,
+  .review-day-row {
     grid-template-columns: 1fr;
   }
 }

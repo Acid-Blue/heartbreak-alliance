@@ -9,6 +9,9 @@ Page({
     communityId: "",
     community: null,
     posts: [],
+    checkins: [],
+    checkinInput: "",
+    submittingCheckin: false,
     joining: false
   },
 
@@ -35,8 +38,9 @@ Page({
 
     Promise.all([
       communityService.getCommunity(communityId),
-      postService.getPostsByCommunity(communityId)
-    ]).then(([community, posts]) => {
+      postService.getPostsByCommunity(communityId),
+      communityService.getCommunityCheckins(communityId)
+    ]).then(([community, posts, checkins]) => {
       if (!community) {
         this.setData({
           community: null,
@@ -48,13 +52,17 @@ Page({
       }
 
       this.setData({
-        community,
-        posts: posts.map((post) => ({
-          ...post,
-          relativeTime: formatRelativeTime(post.createdAt)
-        })),
-        loading: false
-      });
+          community,
+          posts: posts.map((post) => ({
+            ...post,
+            relativeTime: formatRelativeTime(post.createdAt)
+          })),
+          checkins: checkins.map((record) => ({
+            ...record,
+            relativeTime: formatRelativeTime(record.createdAt)
+          })),
+          loading: false
+        });
     }).catch(() => {
       this.setData({
         error: "小队内容加载失败，请稍后再试",
@@ -111,6 +119,68 @@ Page({
     const { id } = event.currentTarget.dataset;
     wx.navigateTo({
       url: `/pages/post/detail?id=${id}`
+    });
+  },
+
+  onCheckinInput(event) {
+    this.setData({
+      checkinInput: event.detail.value
+    });
+  },
+
+  submitCheckin() {
+    const content = this.data.checkinInput.trim();
+
+    if (this.data.submittingCheckin) return;
+
+    if (!content) {
+      wx.showToast({
+        title: "先写下今天的小事",
+        icon: "none"
+      });
+      return;
+    }
+
+    this.setData({
+      submittingCheckin: true
+    });
+
+    communityService.createCommunityCheckin({
+      communityId: this.data.communityId,
+      content
+    }).then((record) => {
+      if (record.moderationStatus === "review") {
+        this.setData({
+          checkinInput: "",
+          submittingCheckin: false
+        });
+        wx.showToast({
+          title: "打卡已进入审核",
+          icon: "none"
+        });
+        return;
+      }
+
+      this.setData({
+        checkins: [{
+          ...record,
+          relativeTime: formatRelativeTime(record.createdAt)
+        }].concat(this.data.checkins),
+        checkinInput: "",
+        submittingCheckin: false
+      });
+      wx.showToast({
+        title: "打卡已记录",
+        icon: "success"
+      });
+    }).catch(() => {
+      this.setData({
+        submittingCheckin: false
+      });
+      wx.showToast({
+        title: "记录失败",
+        icon: "none"
+      });
     });
   },
 

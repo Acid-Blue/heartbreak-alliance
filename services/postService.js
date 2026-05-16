@@ -2,6 +2,8 @@ const { posts, comments } = require("./mockData");
 const { createLocalId } = require("../utils/id");
 const cloudApi = require("../utils/cloudApi");
 const localStore = require("../utils/localStore");
+const moderationService = require("./moderationService");
+const reportService = require("./reportService");
 
 const CREATED_POSTS_KEY = "heartbreakAlliance.createdPosts";
 const CREATED_COMMENTS_KEY = "heartbreakAlliance.createdComments";
@@ -25,11 +27,25 @@ function allPosts() {
 }
 
 function publicPosts() {
-  return allPosts().filter((post) => post.visibility === PUBLIC_VISIBILITY);
+  const hiddenTargets = reportService.getLocalHiddenTargets();
+  return allPosts().filter((post) => {
+    return post.visibility === PUBLIC_VISIBILITY
+      && moderationService.isVisibleRecord(post)
+      && !hiddenTargets.posts.includes(post.id);
+  });
 }
 
 function allComments() {
   return getCreatedComments().concat(comments);
+}
+
+function visibleCommentsByPost(postId) {
+  const hiddenTargets = reportService.getLocalHiddenTargets();
+  return allComments().filter((comment) => {
+    return comment.postId === postId
+      && moderationService.isVisibleRecord(comment)
+      && !hiddenTargets.comments.includes(comment.id);
+  });
 }
 
 function getCreatedPosts() {
@@ -49,7 +65,7 @@ function saveCreatedComments(nextComments) {
 }
 
 function countComments(postId) {
-  return allComments().filter((comment) => comment.postId === postId).length;
+  return visibleCommentsByPost(postId).length;
 }
 
 function decoratePost(post) {
@@ -74,11 +90,16 @@ function getCurrentAuthorName() {
 
 function getFeed() {
   return cloudApi.callData("listPublicPosts").then((cloudPosts) => {
-    return clone(normalizeCloudPosts(cloudPosts).concat(publicPosts().map(decoratePost)));
+    return clone(normalizeCloudPosts(cloudPosts).filter(moderationService.isVisibleRecord).concat(publicPosts().map(decoratePost)));
   }).catch(() => Promise.resolve(clone(publicPosts().map(decoratePost))));
 }
 
 function getPost(id) {
+  const hiddenTargets = reportService.getLocalHiddenTargets();
+  if (hiddenTargets.posts.includes(id)) {
+    return Promise.resolve(null);
+  }
+
   return cloudApi.callData("getPost", { id }).then((cloudPost) => {
     if (cloudPost) {
       return clone({
@@ -97,16 +118,16 @@ function getPost(id) {
 function getPostsByCommunity(communityId) {
   return cloudApi.callData("listPostsByCommunity", { communityId }).then((cloudPosts) => {
     const mockPosts = publicPosts().filter((post) => post.communityId === communityId).map(decoratePost);
-    return clone(normalizeCloudPosts(cloudPosts).concat(mockPosts));
+    return clone(normalizeCloudPosts(cloudPosts).filter(moderationService.isVisibleRecord).concat(mockPosts));
   }).catch(() => Promise.resolve(clone(publicPosts().filter((post) => post.communityId === communityId).map(decoratePost))));
 }
 
 function getCommentsByPost(postId) {
   return cloudApi.callData("listCommentsByPost", { postId }).then((cloudComments) => {
-    const matchedComments = allComments().filter((comment) => comment.postId === postId);
-    return clone((cloudComments || []).concat(matchedComments));
+    const matchedComments = visibleCommentsByPost(postId);
+    return clone((cloudComments || []).filter(moderationService.isVisibleRecord).concat(matchedComments));
   }).catch(() => {
-    const matchedComments = allComments().filter((comment) => comment.postId === postId);
+    const matchedComments = visibleCommentsByPost(postId);
     return Promise.resolve(clone(matchedComments));
   });
 }
@@ -128,7 +149,7 @@ function createPost(payload) {
   const visibility = visibilityOptions.includes(payload.visibility) ? payload.visibility : PUBLIC_VISIBILITY;
 
   return getCurrentAuthorName().then((authorName) => {
-    const post = {
+    const post = moderationService.applyModeration({
       id: createLocalId("post-local"),
       communityId: payload.communityId,
       authorName,
@@ -139,7 +160,7 @@ function createPost(payload) {
       createdAt: new Date().toISOString(),
       commentCount: 0,
       visibility
-    };
+    }, payload.content);
 
     return cloudApi.callData("createPost", { post }).then((cloudPost) => {
       return clone({
@@ -169,13 +190,13 @@ function createComment(payload) {
     }
 
     return getCurrentAuthorName().then((authorName) => {
-      const comment = {
+      const comment = moderationService.applyModeration({
         id: createLocalId("comment-local"),
         postId,
         authorName,
         content,
         createdAt: new Date().toISOString()
-      };
+      }, content);
 
       return cloudApi.callData("createComment", { comment }).then((cloudComment) => {
         return getPost(postId).then((nextPost) => clone({

@@ -140,6 +140,14 @@ function formatContext(context) {
     lines.push(`小队公开内容：${summarizeItems(context.publicPosts)}`);
   }
 
+  if (context.actionDashboard && context.actionDashboard.weeklyReview) {
+    lines.push(`行动追踪：${truncate(context.actionDashboard.weeklyReview.summary || "", 80)}`);
+  }
+
+  if (context.rebuildProgress && context.rebuildProgress.summary) {
+    lines.push(`生活重建：${truncate(context.rebuildProgress.summary.summary || "", 80)}`);
+  }
+
   return lines.length > 0 ? lines.join("\n") : "无额外上下文，仅基于本次输入回应。";
 }
 

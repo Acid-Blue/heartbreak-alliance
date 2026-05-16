@@ -76,6 +76,29 @@
   line-height: 1.55;
 }
 
+.stage-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.stage-tag,
+.match-tag {
+  min-height: 42rpx;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #f4efe4;
+  color: #625c53;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.match-tag {
+  background: #eff6f1;
+  color: #2f6655;
+}
+
 .row-meta {
   margin-top: 18rpx;
   color: #7c756c;

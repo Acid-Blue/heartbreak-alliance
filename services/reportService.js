@@ -22,6 +22,23 @@ function getReports() {
   }).catch(() => Promise.resolve(clone(localStore.readArray(REPORTS_KEY))));
 }
 
+function getLocalHiddenTargets() {
+  return localStore.readArray(REPORTS_KEY).filter((report) => report.status !== "dismissed").reduce((result, report) => {
+    if (report.targetType === "post") {
+      result.posts.push(report.targetId);
+    }
+
+    if (report.targetType === "comment") {
+      result.comments.push(report.targetId);
+    }
+
+    return result;
+  }, {
+    posts: [],
+    comments: []
+  });
+}
+
 function createReport(payload) {
   const targetType = ["post", "comment"].includes(payload.targetType) ? payload.targetType : "post";
   const targetId = String(payload.targetId || "").trim();
@@ -52,8 +69,35 @@ function createReport(payload) {
   });
 }
 
+function updateReportStatus(id, status) {
+  const targetId = String(id || "").trim();
+  const nextStatus = ["pending", "reviewing", "resolved", "dismissed"].includes(status) ? status : "resolved";
+
+  if (!targetId) {
+    return Promise.reject(new Error("missing report id"));
+  }
+
+  const reports = localStore.readArray(REPORTS_KEY);
+  const nextReports = reports.map((report) => report.id === targetId ? {
+    ...report,
+    status: nextStatus,
+    updatedAt: new Date().toISOString()
+  } : report);
+  localStore.write(REPORTS_KEY, nextReports);
+
+  return cloudApi.callData("updateReportStatus", {
+    id: targetId,
+    status: nextStatus
+  }).then((record) => clone(record)).catch(() => {
+    const record = nextReports.find((report) => report.id === targetId) || null;
+    return Promise.resolve(clone(record));
+  });
+}
+
 module.exports = {
   reportReasons,
   getReports,
-  createReport
+  getLocalHiddenTargets,
+  createReport,
+  updateReportStatus
 };

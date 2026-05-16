@@ -44,6 +44,27 @@
   line-height: 1.55;
 }
 
+.night-card {
+  margin-top: 18rpx;
+  padding: 24rpx;
+  border-color: #c7d7e6;
+  background: #f3f8fb;
+}
+
+.night-title {
+  color: #355e78;
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.night-content,
+.night-step {
+  margin-top: 10rpx;
+  color: #3d5363;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
 .risk-card {
   margin-top: 18rpx;
   padding: 24rpx;
@@ -62,6 +83,22 @@
   color: #5f2d27;
   font-size: 26rpx;
   line-height: 1.6;
+}
+
+.risk-plan {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  border-radius: 6rpx;
+  background: #fffdf8;
+  color: #5f2d27;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.call-button {
+  margin-top: 14rpx;
+  min-height: 68rpx;
+  font-size: 24rpx;
 }
 
 .reason-grid {
@@ -226,6 +263,40 @@
   color: #3c362f;
   font-size: 27rpx;
   line-height: 1.55;
+}
+
+.safety-plan {
+  padding: 24rpx;
+}
+
+.plan-input {
+  width: 100%;
+  min-height: 76rpx;
+  margin-bottom: 14rpx;
+  padding: 0 18rpx;
+  border: 1rpx solid #eadcc5;
+  border-radius: 8rpx;
+  background: #fffaf0;
+  color: #2f2a25;
+  font-size: 26rpx;
+}
+
+.plan-textarea {
+  width: 100%;
+  min-height: 132rpx;
+  padding: 18rpx;
+  border: 1rpx solid #eadcc5;
+  border-radius: 8rpx;
+  background: #fffaf0;
+  color: #2f2a25;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.plan-save {
+  margin-top: 16rpx;
+  min-height: 74rpx;
+  font-size: 25rpx;
 }
 
 .support-actions {

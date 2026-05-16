@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "node tests/run-tests.js"
+    "test": "node tests/run-tests.js",
+    "test:e2e:wechat": "node tests/e2e/wechat-flow-check.js"
+  },
+  "devDependencies": {
+    "miniprogram-automator": "^0.12.1"
   }
 }

@@ -5,6 +5,8 @@ const localStore = require("../utils/localStore");
 const postService = require("./postService");
 const { detectSafetyRisk } = require("./safetyService");
 const userService = require("./userService");
+const reviewService = require("./reviewService");
+const rebuildService = require("./rebuildService");
 
 const LOCAL_MESSAGES_KEY = "heartbreakAlliance.agentMessages";
 
@@ -66,9 +68,11 @@ function buildAgentContext() {
 
     tasks.push(permissions.ownContent ? postService.getMyPosts() : Promise.resolve([]));
     tasks.push(permissions.ownContent ? postService.getMyComments() : Promise.resolve([]));
+    tasks.push(permissions.ownContent ? reviewService.getActionDashboard() : Promise.resolve(null));
+    tasks.push(permissions.ownContent ? rebuildService.getProgressSummary() : Promise.resolve(null));
     tasks.push(permissions.publicCommunityContent ? postService.getFeed() : Promise.resolve([]));
 
-    return Promise.all(tasks).then(([myPosts, myComments, publicPosts]) => {
+    return Promise.all(tasks).then(([myPosts, myComments, actionDashboard, rebuildProgress, publicPosts]) => {
       const joinedCommunityIds = user.joinedCommunityIds || [];
       const joinedPublicPosts = publicPosts.filter((post) => joinedCommunityIds.includes(post.communityId));
       const sourceText = buildSourceText(permissions);
@@ -78,6 +82,8 @@ function buildAgentContext() {
         sourceText,
         myPosts,
         myComments,
+        actionDashboard,
+        rebuildProgress,
         publicPosts: joinedPublicPosts
       };
     });
@@ -106,6 +112,16 @@ function summarizeComments(comments) {
   return comments.slice(0, 2).map((comment) => `回应「${truncate(comment.content, 18)}」`);
 }
 
+function summarizeActionDashboard(actionDashboard) {
+  if (!actionDashboard || !actionDashboard.weeklyReview) return [];
+  return [`行动追踪:${truncate(actionDashboard.weeklyReview.summary, 32)}`];
+}
+
+function summarizeRebuildProgress(rebuildProgress) {
+  if (!rebuildProgress || !rebuildProgress.summary) return [];
+  return [`生活重建:${truncate(rebuildProgress.summary.summary, 32)}`];
+}
+
 function truncate(value, length) {
   const text = value || "";
   return text.length > length ? `${text.slice(0, length)}...` : text;
@@ -116,6 +132,8 @@ function buildMockReply(content, context) {
   const focus = trimmed.length > 18 ? `${trimmed.slice(0, 18)}...` : trimmed || "这件事";
   const contextLines = summarizePosts(context.myPosts)
     .concat(summarizeComments(context.myComments))
+    .concat(summarizeActionDashboard(context.actionDashboard))
+    .concat(summarizeRebuildProgress(context.rebuildProgress))
     .concat(summarizePosts(context.publicPosts));
   const contextHint = contextLines.length > 0
     ? `我也看到一些上下文：${contextLines.join("；")}。`
@@ -143,12 +161,14 @@ function buildSafetyAgentReply(content, safety) {
 function createAiReply(content, context) {
   return cloudApi.callFunction("aiAgent", {
     content,
-    context: {
-      sourceText: context.sourceText,
-      myPosts: context.myPosts,
-      myComments: context.myComments,
-      publicPosts: context.publicPosts
-    }
+      context: {
+        sourceText: context.sourceText,
+        myPosts: context.myPosts,
+        myComments: context.myComments,
+        actionDashboard: context.actionDashboard,
+        rebuildProgress: context.rebuildProgress,
+        publicPosts: context.publicPosts
+      }
   }).then((result) => {
     if (!result || result.ok === false || !result.data || !result.data.content) {
       throw new Error((result && result.error) || "AI reply failed");

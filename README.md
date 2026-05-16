@@ -25,6 +25,14 @@ npm test
 
 GitHub Actions 会在 push 和 pull request 时运行同一套检查。
 
+微信开发者工具主流程 E2E：
+
+```bash
+npm run test:e2e:wechat
+```
+
+如本机 DevTools 端口未启用，先运行微信开发者工具 CLI `auto --project <项目路径> --auto-port 52634 --trust-project`。
+
 ## Spec
 
 正式规范位于 `docs/spec/`，后续功能开发应先更新 spec，再实现对应页面、服务和验收项。

@@ -1,5 +1,6 @@
 const communityService = require("../../services/communityService");
 const postService = require("../../services/postService");
+const moderationService = require("../../services/moderationService");
 
 Page({
   data: {
@@ -16,6 +17,7 @@ Page({
       visibility: "小队可见",
       content: ""
     },
+    contentNotice: "",
     submitting: false
   },
 
@@ -62,7 +64,11 @@ Page({
   },
 
   onContentInput(event) {
-    this.updateForm("content", event.detail.value);
+    const content = event.detail.value;
+    this.updateForm("content", content);
+    this.setData({
+      contentNotice: moderationService.detectModeration(content).notice
+    });
   },
 
   updateForm(key, value) {
@@ -98,13 +104,15 @@ Page({
       ...form,
       content,
       communityId
-    }).then(() => {
+    }).then((post) => {
+      const isReview = post.moderationStatus === "review";
       wx.showToast({
-        title: "已发布到小队",
-        icon: "success"
+        title: isReview ? "内容已进入审核" : "已发布到小队",
+        icon: isReview ? "none" : "success"
       });
       this.setData({
         "form.content": "",
+        contentNotice: isReview ? post.moderationNotice : "",
         submitting: false
       });
       setTimeout(() => {

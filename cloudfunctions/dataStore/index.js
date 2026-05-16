@@ -13,6 +13,8 @@ const COLLECTIONS = {
   agentMessages: "ha_agent_messages",
   urgeRecords: "ha_urge_records",
   reviewRecords: "ha_review_records",
+  rebuildRecords: "ha_rebuild_records",
+  communityCheckins: "ha_community_checkins",
   settings: "ha_user_settings",
   users: "ha_users",
   reports: "ha_reports"
@@ -73,6 +75,14 @@ async function runAction(action, payload, openId) {
       return listMyRecords(COLLECTIONS.reviewRecords, openId);
     case "createReviewRecord":
       return createRecord(COLLECTIONS.reviewRecords, payload.record, openId);
+    case "listRebuildRecords":
+      return listMyRecords(COLLECTIONS.rebuildRecords, openId);
+    case "createRebuildRecord":
+      return createRecord(COLLECTIONS.rebuildRecords, payload.record, openId);
+    case "listCommunityCheckins":
+      return listCommunityCheckins(payload.communityId);
+    case "createCommunityCheckin":
+      return createRecord(COLLECTIONS.communityCheckins, payload.record, openId);
     case "getSetting":
       return getSetting(payload.key, payload.fallback, openId);
     case "setSetting":
@@ -85,6 +95,8 @@ async function runAction(action, payload, openId) {
       return listMyRecords(COLLECTIONS.reports, openId);
     case "createReport":
       return createRecord(COLLECTIONS.reports, sanitizeReport(payload.report), openId);
+    case "updateReportStatus":
+      return updateReportStatus(payload.id, payload.status, openId);
     default:
       throw new Error(`unsupported action: ${action}`);
   }
@@ -98,7 +110,22 @@ async function listPublicPosts() {
     .orderBy("createdAt", "desc")
     .limit(50)
     .get();
-  return normalizeList(result.data);
+  return normalizeList(result.data).filter(isVisibleRecord);
+}
+
+async function listCommunityCheckins(communityId) {
+  if (!COMMUNITY_IDS.includes(communityId)) {
+    return [];
+  }
+
+  const result = await db.collection(COLLECTIONS.communityCheckins)
+    .where({
+      communityId
+    })
+    .orderBy("createdAt", "desc")
+    .limit(50)
+    .get();
+  return normalizeList(result.data).filter(isVisibleRecord);
 }
 
 async function listPostsByCommunity(communityId) {
@@ -110,7 +137,7 @@ async function listPostsByCommunity(communityId) {
     .orderBy("createdAt", "desc")
     .limit(50)
     .get();
-  return normalizeList(result.data);
+  return normalizeList(result.data).filter(isVisibleRecord);
 }
 
 async function listMyRecords(collectionName, openId, direction = "desc") {
@@ -121,7 +148,7 @@ async function listMyRecords(collectionName, openId, direction = "desc") {
     .orderBy("createdAt", direction)
     .limit(100)
     .get();
-  return normalizeList(result.data);
+  return normalizeList(result.data).filter(isVisibleRecord);
 }
 
 async function getPost(id) {
@@ -152,6 +179,10 @@ async function listCommentsByPost(postId) {
 
 async function createComment(comment, openId) {
   const saved = await createRecord(COLLECTIONS.comments, comment, openId);
+
+  if (!isVisibleRecord(comment)) {
+    return saved;
+  }
 
   try {
     const post = await getPostDocument(comment.postId);
@@ -345,6 +376,36 @@ function sanitizeReport(report) {
   };
 }
 
+async function updateReportStatus(id, status, openId) {
+  const targetId = String(id || "").trim();
+  const nextStatus = ["pending", "reviewing", "resolved", "dismissed"].includes(status) ? status : "resolved";
+  const result = await db.collection(COLLECTIONS.reports)
+    .where({
+      userOpenId: openId,
+      id: targetId
+    })
+    .limit(1)
+    .get();
+  const existing = result.data[0];
+
+  if (!existing) {
+    throw new Error("report not found");
+  }
+
+  await db.collection(COLLECTIONS.reports).doc(existing._id).update({
+    data: {
+      status: nextStatus,
+      updatedAt: new Date().toISOString()
+    }
+  });
+
+  return normalizeRecord({
+    ...existing,
+    status: nextStatus,
+    updatedAt: new Date().toISOString()
+  });
+}
+
 async function createRecord(collectionName, record, openId) {
   const createdAt = record.createdAt || new Date().toISOString();
   const data = {
@@ -383,4 +444,10 @@ function normalizeRecord(record) {
   delete nextRecord._openid;
   delete nextRecord.userOpenId;
   return nextRecord;
+}
+
+function isVisibleRecord(record) {
+  return record
+    && record.isHidden !== true
+    && record.moderationStatus !== "review";
 }

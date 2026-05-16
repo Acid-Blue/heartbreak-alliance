@@ -92,6 +92,56 @@
 
     <view class="section">
       <view class="section-header">
+        <text class="section-title">生活重建</text>
+        <text class="section-action">{{rebuildSummary.entryCount}} 次记录</text>
+      </view>
+      <view wx:if="{{rebuildSummary}}" class="rebuild-summary card">
+        <view class="rebuild-summary-title">{{rebuildSummary.title}}</view>
+        <view class="rebuild-summary-content">{{rebuildSummary.summary}}</view>
+        <view class="rebuild-summary-next">{{rebuildSummary.nextStep}}</view>
+      </view>
+      <view class="rebuild-card card">
+        <view class="field-label">今天只选 1-3 个小步</view>
+        <view class="task-grid">
+          <view
+            wx:for="{{rebuildTaskOptions}}"
+            wx:key="id"
+            class="task-chip {{item.selected ? 'active' : ''}}"
+            data-id="{{item.id}}"
+            bindtap="toggleRebuildTask"
+          >
+            <view class="task-label">{{item.label}}</view>
+            <view class="task-category">{{item.category}}</view>
+          </view>
+        </view>
+        <view class="field-label level-label">今天的情绪</view>
+        <view class="level-row">
+          <view wx:for="{{rebuildLevelOptions}}" wx:key="*this" class="level-dot {{rebuildMoodLevel === item ? 'active' : ''}}" data-value="{{item}}" bindtap="chooseRebuildMood">{{item}}</view>
+        </view>
+        <view class="field-label level-label">联系冲动</view>
+        <view class="level-row">
+          <view wx:for="{{rebuildLevelOptions}}" wx:key="*this" class="level-dot {{rebuildUrgeLevel === item ? 'active' : ''}}" data-value="{{item}}" bindtap="chooseRebuildUrge">{{item}}</view>
+        </view>
+        <textarea class="rebuild-note" value="{{rebuildNote}}" maxlength="180" placeholder="今天的触发点、完成的小事或下一步调整" bindinput="onRebuildNoteInput" />
+        <view class="rebuild-actions">
+          <button class="secondary-button rebuild-button" loading="{{savingRebuild}}" bindtap="saveRebuildPlan">保存计划</button>
+          <button class="primary-button rebuild-button" loading="{{savingRebuild}}" bindtap="saveRebuildProgress">记录完成</button>
+        </view>
+      </view>
+      <view wx:for="{{recentRebuildRecords}}" wx:key="id" class="rebuild-record card">
+        <view class="rebuild-record-top">
+          <text>{{item.kind === 'dailyPlan' ? '计划' : '进度'}}</text>
+          <text>{{item.relativeTime}}</text>
+        </view>
+        <view wx:if="{{item.summary}}" class="rebuild-record-content">{{item.summary}}</view>
+        <view wx:else class="rebuild-record-content">
+          <text wx:for="{{item.tasks}}" wx:key="id" class="rebuild-task-inline">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
         <text class="section-title">Agent 权限</text>
         <text class="section-action" bindtap="openAgent">去对话</text>
       </view>
@@ -129,6 +179,16 @@
           </view>
         </view>
         <view class="permission-desc">Agent 不读取私聊、通讯录或非公开内容。后续接入真实模型前，需要再次确认隐私授权和数据范围。</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">内容治理</text>
+      </view>
+      <view class="moderation-entry card" bindtap="openModeration">
+        <view class="moderation-title">举报记录与处理状态</view>
+        <view class="moderation-desc">查看已提交举报，标记处理中、已处理或不处理；被举报内容会先在本机隐藏。</view>
       </view>
     </view>
   </block>

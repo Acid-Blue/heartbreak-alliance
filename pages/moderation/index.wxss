@@ -1,0 +1,62 @@
+.page-title {
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.page-intro {
+  margin-top: 14rpx;
+  color: #625c53;
+  font-size: 27rpx;
+  line-height: 1.55;
+}
+
+.report-card {
+  margin-top: 18rpx;
+  padding: 24rpx;
+}
+
+.report-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.report-reason {
+  color: #2f2a25;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.report-status {
+  flex: 0 0 auto;
+  color: #2f6655;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.report-meta,
+.report-desc {
+  margin-top: 10rpx;
+  color: #7c756c;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.report-desc {
+  color: #3c362f;
+}
+
+.report-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.report-button {
+  min-height: 68rpx;
+  padding-left: 8rpx;
+  padding-right: 8rpx;
+  font-size: 23rpx;
+}

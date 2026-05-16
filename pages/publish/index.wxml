@@ -48,6 +48,7 @@
         placeholder="例如：今天最难受的时刻是什么？你希望队友怎么回应你？"
         bindinput="onContentInput"
       />
+      <view wx:if="{{contentNotice}}" class="content-notice">{{contentNotice}}</view>
       <view class="input-count">{{form.content.length}} / 800</view>
     </view>
 

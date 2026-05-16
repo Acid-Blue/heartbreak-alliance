@@ -34,6 +34,10 @@
         >{{item.isJoined ? '已加入' : '加入'}}</view>
       </view>
       <view class="row-summary">{{item.summary}}</view>
+      <view class="stage-row">
+        <text wx:for="{{item.stageTags}}" wx:key="*this" class="stage-tag">{{item}}</text>
+        <text class="match-tag">{{item.stageMatchText}}</text>
+      </view>
       <view class="pill-row">
         <text wx:for="{{item.tags}}" wx:key="*this" class="pill">{{item}}</text>
       </view>

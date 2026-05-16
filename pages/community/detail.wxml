@@ -9,7 +9,15 @@
       <view class="pill-row detail-tags">
         <text wx:for="{{community.tags}}" wx:key="*this" class="pill">{{item}}</text>
       </view>
+      <view class="stage-line">
+        <text wx:for="{{community.stageTags}}" wx:key="*this" class="stage-tag">{{item}}</text>
+        <text class="match-tag">{{community.stageMatchText}}</text>
+      </view>
       <view class="detail-meta">{{community.memberCount}} 人 · 今日 {{community.activeToday}} 人在场 · {{community.mood}}</view>
+      <view class="template-card">
+        <view class="template-title">分享模板</view>
+        <view class="template-content">{{community.storyTemplate}}</view>
+      </view>
       <view class="detail-actions">
         <button
           class="secondary-button action-button"
@@ -24,8 +32,36 @@
 
     <view class="section">
       <view class="section-header">
+        <text class="section-title">阶段打卡</text>
+        <text class="section-action">{{community.checkinPrompt}}</text>
+      </view>
+      <view class="checkin-composer card">
+        <textarea
+          class="checkin-input"
+          value="{{checkinInput}}"
+          maxlength="180"
+          placeholder="{{community.checkinPrompt}}"
+          bindinput="onCheckinInput"
+        />
+        <button class="primary-button checkin-button" loading="{{submittingCheckin}}" bindtap="submitCheckin">记录今天的小事</button>
+      </view>
+      <view wx:if="{{checkins.length === 0}}" class="empty card">还没有打卡。你可以先留下一件今天守住的小事。</view>
+      <view wx:for="{{checkins}}" wx:key="id" class="checkin-row card">
+        <view class="checkin-top">
+          <text class="checkin-author">{{item.authorName}}</text>
+          <text class="checkin-time">{{item.stage}} · {{item.relativeTime}}</text>
+        </view>
+        <view class="checkin-content">{{item.content}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
         <text class="section-title">小队公开内容</text>
-        <text class="section-action">Agent 可参考</text>
+        <text class="section-action">正向回应</text>
+      </view>
+      <view class="guideline-card card">
+        <view wx:for="{{community.responseGuidelines}}" wx:key="*this" class="guideline-row">· {{item}}</view>
       </view>
       <view wx:if="{{posts.length === 0}}" class="empty card">这个小队还没有内容，你可以成为第一个开口的人。</view>
       <view wx:for="{{posts}}" wx:key="id" class="post-card card" data-id="{{item.id}}" bindtap="openPost">

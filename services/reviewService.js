@@ -68,6 +68,20 @@ const protectionActions = [
   { value: "askSupport", label: "先找可信赖的人" }
 ];
 
+const actionFocusOptions = [
+  { value: "boundary", label: "守住边界", taskHint: "减少查看动态，保留必要沟通边界。" },
+  { value: "selfCare", label: "照顾身体", taskHint: "睡眠、饮食和洗漱先恢复一个基本动作。" },
+  { value: "support", label: "连接支持", taskHint: "找一个可信赖的人或阵线小队说具体一点。" },
+  { value: "logistics", label: "现实事务", taskHint: "把必须处理的物品、账单或工作交接写成清单。" }
+];
+
+const progressStates = [
+  { value: "kept", label: "守住了" },
+  { value: "wavered", label: "动摇但没发" },
+  { value: "relapsed", label: "破戒了" },
+  { value: "rebuild", label: "做了自己的事" }
+];
+
 const urgeLevels = [1, 2, 3, 4, 5];
 
 function clone(value) {
@@ -209,6 +223,96 @@ function createNoContactPlan(payload) {
   }).catch(() => saveLocalRecord(record));
 }
 
+function createActionPlan(payload) {
+  const focus = actionFocusOptions.find((item) => item.value === payload.focus) || actionFocusOptions[0];
+  const nextAction = (payload.nextAction || "").trim();
+  const supportAction = (payload.supportAction || "").trim();
+  const reviewAfterDays = normalizeReviewDays(payload.reviewAfterDays);
+  const safety = detectSafetyRisk([nextAction, supportAction, payload.blocker || ""].join(" "));
+
+  if (!nextAction) {
+    return Promise.reject(new Error("empty action plan"));
+  }
+
+  const plan = buildActionPlan({
+    focus,
+    nextAction,
+    supportAction,
+    blocker: (payload.blocker || "").trim(),
+    reviewAfterDays,
+    safety
+  });
+
+  const record = {
+    id: createLocalId("review-local"),
+    kind: "actionPlan",
+    focus: focus.value,
+    focusText: focus.label,
+    nextAction,
+    supportAction,
+    blocker: (payload.blocker || "").trim(),
+    reviewAfterDays,
+    plan,
+    hasSafetyRisk: safety.hasRisk,
+    createdAt: new Date().toISOString()
+  };
+
+  return cloudApi.callData("createReviewRecord", { record }).then((cloudRecord) => {
+    return clone(cloudRecord);
+  }).catch(() => saveLocalRecord(record));
+}
+
+function createProgressCheckin(payload) {
+  const state = progressStates.find((item) => item.value === payload.state) || progressStates[0];
+  const note = (payload.note || "").trim();
+  const completedAction = (payload.completedAction || "").trim();
+  const urgeLevel = normalizeUrgeLevel(payload.urgeLevel);
+  const safety = detectSafetyRisk([note, completedAction].join(" "));
+
+  if (!note && !completedAction) {
+    return Promise.reject(new Error("empty progress checkin"));
+  }
+
+  const summary = buildProgressSummary({
+    state,
+    note,
+    completedAction,
+    urgeLevel,
+    safety
+  });
+
+  const record = {
+    id: createLocalId("review-local"),
+    kind: "progressCheckin",
+    state: state.value,
+    stateText: state.label,
+    note,
+    completedAction,
+    urgeLevel,
+    summary,
+    hasSafetyRisk: safety.hasRisk,
+    createdAt: new Date().toISOString()
+  };
+
+  return cloudApi.callData("createReviewRecord", { record }).then((cloudRecord) => {
+    return clone(cloudRecord);
+  }).catch(() => saveLocalRecord(record));
+}
+
+function getActionDashboard() {
+  return getReviewRecords().then((records) => {
+    const sortedRecords = records.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const plans = sortedRecords.filter((record) => record.kind === "actionPlan" || record.kind === "noContactPlan").slice(0, 3);
+    const checkins = sortedRecords.filter((record) => record.kind === "progressCheckin").slice(0, 5);
+
+    return clone({
+      plans,
+      checkins,
+      weeklyReview: buildWeeklyReview(sortedRecords)
+    });
+  });
+}
+
 function saveLocalRecord(record) {
   const nextRecords = localStore.readArray(REVIEW_RECORDS_KEY);
   nextRecords.unshift(record);
@@ -219,6 +323,11 @@ function saveLocalRecord(record) {
 function normalizeUrgeLevel(value) {
   const level = Number(value);
   return urgeLevels.includes(level) ? level : 3;
+}
+
+function normalizeReviewDays(value) {
+  const days = Number(value);
+  return [1, 3, 7].includes(days) ? days : 3;
 }
 
 function buildDecision({ intent, urgeLevel, hasPracticalReason, wait, safety }) {
@@ -365,6 +474,91 @@ function buildNoContactPlan({ duration, riskWindow, protectionAction, goal, repl
   };
 }
 
+function buildActionPlan({ focus, nextAction, supportAction, blocker, reviewAfterDays, safety }) {
+  if (safety.hasRisk) {
+    return {
+      level: "safety",
+      title: "先处理安全，再做行动计划",
+      summary: safety.notice,
+      tasks: safety.actions,
+      reviewText: "等安全稳定后，再回来把计划拆小。"
+    };
+  }
+
+  const tasks = [
+    `今天只做一件事：${nextAction}`,
+    supportAction ? `需要支持时：${supportAction}` : focus.taskHint,
+    blocker ? `遇到阻碍时先处理：${blocker}` : "如果又想联系 TA，先把冲动写下来，等 10 分钟。"
+  ];
+
+  return {
+    level: "plan",
+    title: `${focus.label}行动计划`,
+    summary: "这不是一次性解决关系问题，而是把今天能做的部分从情绪里拆出来。",
+    tasks,
+    reviewText: `${reviewAfterDays} 天后回来看一次：哪些动作真的帮到了你，哪些需要换掉。`
+  };
+}
+
+function buildProgressSummary({ state, note, completedAction, urgeLevel, safety }) {
+  if (safety.hasRisk) {
+    return {
+      level: "safety",
+      title: "这次记录先转为安全提醒",
+      summary: safety.notice,
+      nextStep: "先联系现实中的可信赖支持或紧急救助渠道。"
+    };
+  }
+
+  const actionText = completedAction ? `你完成了「${completedAction}」。` : "你记录了今天的状态。";
+
+  if (state.value === "relapsed") {
+    return {
+      level: "pause",
+      title: "破戒后先止损，不加码",
+      summary: `${actionText} 冲动强度 ${urgeLevel}/5。破戒不等于失败，重点是停止补发解释和继续拉扯。`,
+      nextStep: "写下触发点，重新从今天开始执行剩余计划。"
+    };
+  }
+
+  return {
+    level: "plan",
+    title: `${state.label}，把证据留下`,
+    summary: `${actionText} 冲动强度 ${urgeLevel}/5。${note ? `记录：${note}` : ""}`,
+    nextStep: urgeLevel >= 4 ? "今晚优先去急性期支持页，不做联系决策。" : "保留这个有效动作，明天继续只做一件小事。"
+  };
+}
+
+function buildWeeklyReview(records) {
+  const now = Date.now();
+  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+  const recentCheckins = records.filter((record) => {
+    return record.kind === "progressCheckin" && now - new Date(record.createdAt).getTime() <= sevenDaysMs;
+  });
+  const keptCount = recentCheckins.filter((record) => record.state === "kept" || record.state === "wavered").length;
+  const rebuildCount = recentCheckins.filter((record) => record.state === "rebuild").length;
+  const relapseCount = recentCheckins.filter((record) => record.state === "relapsed").length;
+  const urgeTotal = recentCheckins.reduce((sum, record) => sum + normalizeUrgeLevel(record.urgeLevel), 0);
+  const avgUrge = recentCheckins.length > 0 ? Math.round((urgeTotal / recentCheckins.length) * 10) / 10 : 0;
+
+  return {
+    title: recentCheckins.length > 0 ? "最近 7 天有记录" : "还没有周期记录",
+    summary: recentCheckins.length > 0
+      ? `记录 ${recentCheckins.length} 次，守住或延迟 ${keptCount} 次，做回自己的事 ${rebuildCount} 次，破戒 ${relapseCount} 次，平均冲动 ${avgUrge}/5。`
+      : "先完成一次行动计划或进度记录，周期回顾会自动生成。",
+    nextStep: relapseCount > keptCount
+      ? "下一步先降低触发：隐藏聊天入口、减少查看动态，并把支持联系人写清楚。"
+      : "下一步保留有效动作，不扩大目标，只把最有用的一件事重复一次。",
+    stats: {
+      checkinCount: recentCheckins.length,
+      keptCount,
+      rebuildCount,
+      relapseCount,
+      avgUrge
+    }
+  };
+}
+
 function addDays(date, days) {
   const nextDate = new Date(date.getTime());
   nextDate.setDate(nextDate.getDate() + days);
@@ -385,9 +579,14 @@ module.exports = {
   noContactDurations,
   riskWindows,
   protectionActions,
+  actionFocusOptions,
+  progressStates,
   urgeLevels,
   getReviewRecords,
+  getActionDashboard,
   createContactDecision,
   createRelationshipReview,
-  createNoContactPlan
+  createNoContactPlan,
+  createActionPlan,
+  createProgressCheckin
 };

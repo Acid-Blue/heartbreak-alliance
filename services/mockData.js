@@ -14,6 +14,10 @@ const communities = [
     memberCount: 128,
     activeToday: 23,
     tags: ["断联", "夜间陪伴", "互相提醒"],
+    stages: ["急性期", "复盘期"],
+    storyTemplate: "发生了什么；我现在最想做什么；我希望队友怎么接住我。",
+    responseGuidelines: ["先回应感受，不催对方立刻振作。", "给一个具体小动作，避免替对方做决定。"],
+    checkinPrompt: "今天我守住的一件事是",
     mood: "安静但有人回应",
     isJoined: true
   },
@@ -24,6 +28,10 @@ const communities = [
     memberCount: 96,
     activeToday: 18,
     tags: ["复盘", "自我效能", "生活秩序"],
+    stages: ["复盘期", "重建期"],
+    storyTemplate: "具体事件；我反复卡住的解释；我能承担和不能承担的部分。",
+    responseGuidelines: ["只讨论具体事实和边界，不做绝对定性。", "把建议压缩成一个可执行小任务。"],
+    checkinPrompt: "今天我从复盘里带走的一小步是",
     mood: "适合长文和认真回应",
     isJoined: true
   },
@@ -34,6 +42,10 @@ const communities = [
     memberCount: 214,
     activeToday: 41,
     tags: ["睡前", "倾诉", "即时支持"],
+    stages: ["急性期", "孤独期"],
+    storyTemplate: "今晚最难受的时刻；我在哪里；接下来 10 分钟我准备做什么。",
+    responseGuidelines: ["用短句陪伴，少讲大道理。", "优先提醒睡前低刺激动作和现实支持。"],
+    checkinPrompt: "今晚我先让自己安全一点的动作是",
     mood: "温和、慢回复",
     isJoined: false
   }

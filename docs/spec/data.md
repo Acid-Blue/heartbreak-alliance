@@ -25,6 +25,10 @@
 - `summary`: 简介
 - `memberCount`: 成员数
 - `tags`: 标签
+- `stages`: 匹配恢复阶段
+- `storyTemplate`: 分享模板
+- `responseGuidelines`: 正向回应引导
+- `checkinPrompt`: 阶段打卡提示
 - `mood`: 小队当前氛围
 - `isJoined`: 是否加入
 
@@ -37,6 +41,7 @@
 - `reasonText`: 举报原因文案
 - `description`: 可选补充说明
 - `status`: 处理状态，默认 `pending`
+- `updatedAt`: 状态更新时间
 - `createdAt`: 创建时间
 
 ### Post
@@ -50,6 +55,9 @@
 - `createdAt`: 创建时间
 - `commentCount`: 评论数
 - `visibility`: 可见范围
+- `moderationStatus`: 内容审核状态，`visible` | `review`
+- `isHidden`: 是否从公开流隐藏
+- `moderationNotice`: 内容提示文案
 
 ### Comment
 
@@ -58,6 +66,9 @@
 - `authorName`: 作者昵称
 - `content`: 回应正文
 - `createdAt`: 创建时间
+- `moderationStatus`: 内容审核状态，`visible` | `review`
+- `isHidden`: 是否从公开回应隐藏
+- `moderationNotice`: 内容提示文案
 
 ### AgentMessage
 
@@ -75,13 +86,19 @@
 - `draft`: 用户先存下、不发送的内容
 - `createdAt`: 创建时间
 - `delayMinutes`: 建议延迟决策分钟数
+- `isNightMode`: 是否按深夜模式记录
 - `hasSafetyRisk`: 是否命中安全提醒
 - `safetyNotice`: 安全提醒文案
+- `safetyActions`: 安全动作列表
+- `supportContactName`: 安全计划中的联系人
+- `supportContactPhone`: 安全计划中的联系人电话
+- `safePlace`: 安全计划中的地点
+- `groundingAction`: 安全计划中的稳定动作
 
 ### ReviewRecord
 
 - `id`: 复盘记录 ID
-- `kind`: 记录类型，`contactDecision` | `relationshipReview` | `noContactPlan`
+- `kind`: 记录类型，`contactDecision` | `relationshipReview` | `noContactPlan` | `actionPlan` | `progressCheckin`
 - `intent`: 联系目的
 - `intentText`: 联系目的文案
 - `wait`: 已等待时长
@@ -107,7 +124,36 @@
 - `replacement`: 冲动替代动作
 - `supportPerson`: 可选现实支持对象
 - `plan`: 断联计划结果
+- `focus`: 行动计划焦点
+- `nextAction`: 下一步行动
+- `supportAction`: 支持动作
+- `reviewAfterDays`: 回顾周期
+- `state`: 执行状态
+- `completedAction`: 已完成动作
+- `summary`: 进度总结
 - `hasSafetyRisk`: 是否命中安全提醒
+- `createdAt`: 创建时间
+
+### CommunityCheckin
+
+- `id`: 打卡记录 ID
+- `communityId`: 所属小队 ID
+- `communityName`: 小队名称
+- `stage`: 用户当前阶段
+- `authorName`: 作者昵称
+- `prompt`: 打卡提示
+- `content`: 打卡内容
+- `createdAt`: 创建时间
+
+### RebuildRecord
+
+- `id`: 生活重建记录 ID
+- `kind`: `dailyPlan` | `progressEntry`
+- `tasks`: 选中的生活重建小步
+- `note`: 备注
+- `moodLevel`: 情绪评分，1-5
+- `urgeLevel`: 联系冲动评分，1-5
+- `summary`: 进度摘要
 - `createdAt`: 创建时间
 
 ## Services
@@ -120,6 +166,8 @@
 - `communityService.searchCommunities(query)`
 - `communityService.joinCommunity(id)`
 - `communityService.leaveCommunity(id)`
+- `communityService.getCommunityCheckins(communityId)`
+- `communityService.createCommunityCheckin(payload)`
 - `postService.getFeed()`
 - `postService.getPost(id)`
 - `postService.getPostsByCommunity(communityId)`
@@ -128,14 +176,24 @@
 - `postService.createPost(payload)`
 - `postService.createComment(payload)`
 - `supportService.getUrgeRecords()`
+- `supportService.getSafetyPlan()`
+- `supportService.saveSafetyPlan(payload)`
 - `supportService.createUrgeRecord(payload)`
 - `supportService.detectSafetyRisk(value, reason)`
 - `reportService.getReports()`
+- `reportService.getLocalHiddenTargets()`
 - `reportService.createReport(payload)`
+- `reportService.updateReportStatus(id, status)`
 - `reviewService.getReviewRecords()`
+- `reviewService.getActionDashboard()`
 - `reviewService.createContactDecision(payload)`
 - `reviewService.createRelationshipReview(payload)`
 - `reviewService.createNoContactPlan(payload)`
+- `reviewService.createActionPlan(payload)`
+- `reviewService.createProgressCheckin(payload)`
+- `rebuildService.getProgressSummary()`
+- `rebuildService.createDailyPlan(payload)`
+- `rebuildService.createProgressEntry(payload)`
 - `cloudfunctions/dataStore`
 - `cloudfunctions/aiAgent`
 - `agentService.getAgentMessages()`
@@ -156,6 +214,7 @@
 - `pages/post/detail?id=<postId>`
 - `pages/publish/index?communityId=<communityId>`
 - `pages/agent/index?communityId=<communityId>`
+- `pages/moderation/index`
 
 ## Cloud Boundary
 
@@ -168,4 +227,4 @@
 - `dataStore` 云函数负责云数据库读写。
 - `aiAgent` 云函数负责服务端 AI 推理，前端不保存 API Key。
 
-`dataStore` 当前使用集合：`ha_users`、`ha_posts`、`ha_comments`、`ha_agent_messages`、`ha_urge_records`、`ha_review_records`、`ha_user_settings`、`ha_reports`。用户资料通过 `getUserProfile` 和 `updateUserProfile` 读写，服务端以微信 OpenID 作为所有权边界。
+`dataStore` 当前使用集合：`ha_users`、`ha_posts`、`ha_comments`、`ha_agent_messages`、`ha_urge_records`、`ha_review_records`、`ha_rebuild_records`、`ha_community_checkins`、`ha_user_settings`、`ha_reports`。用户资料通过 `getUserProfile` 和 `updateUserProfile` 读写，服务端以微信 OpenID 作为所有权边界。

@@ -5,19 +5,25 @@ Page({
   data: {
     reasons: supportService.urgeReasons,
     bufferSteps: supportService.bufferSteps,
+    nightSteps: supportService.nightSupportSteps,
     selectedReason: "contact",
     selectedPrompt: supportService.urgeReasons[0].prompt,
     draft: "",
     safetyNotice: "",
+    isNightMode: supportService.isNightTime(),
+    safetyPlan: supportService.defaultSafetyPlan,
+    safetyPlanForm: supportService.defaultSafetyPlan,
     savedRecord: null,
     recentRecords: [],
     openedRecordId: "",
     recordCount: 0,
     submitting: false,
+    savingSafetyPlan: false,
     boundary: getApp().globalData.serviceBoundary
   },
 
   onLoad() {
+    this.loadSafetyPlan();
     this.loadRecords();
   },
 
@@ -40,6 +46,15 @@ Page({
     });
   },
 
+  loadSafetyPlan() {
+    supportService.getSafetyPlan().then((plan) => {
+      this.setData({
+        safetyPlan: plan,
+        safetyPlanForm: plan
+      });
+    });
+  },
+
   formatPreview(value) {
     const text = value || "";
     return text.length > 36 ? `${text.slice(0, 36)}...` : text;
@@ -52,6 +67,7 @@ Page({
     this.setData({
       selectedReason: selected.value,
       selectedPrompt: selected.prompt,
+      isNightMode: selected.value === "night" || supportService.isNightTime(),
       safetyNotice: this.getSafetyNotice(this.data.draft, selected.value)
     });
   },
@@ -66,6 +82,57 @@ Page({
 
   getSafetyNotice(draft, reason) {
     return supportService.detectSafetyRisk(draft, reason).notice;
+  },
+
+  onSafetyPlanInput(event) {
+    const { key } = event.currentTarget.dataset;
+    this.setData({
+      [`safetyPlanForm.${key}`]: event.detail.value
+    });
+  },
+
+  saveSafetyPlan() {
+    if (this.data.savingSafetyPlan) return;
+
+    this.setData({
+      savingSafetyPlan: true
+    });
+
+    supportService.saveSafetyPlan(this.data.safetyPlanForm).then((plan) => {
+      this.setData({
+        safetyPlan: plan,
+        safetyPlanForm: plan,
+        savingSafetyPlan: false
+      });
+      wx.showToast({
+        title: "安全计划已保存",
+        icon: "success"
+      });
+    }).catch(() => {
+      this.setData({
+        savingSafetyPlan: false
+      });
+      wx.showToast({
+        title: "保存失败",
+        icon: "none"
+      });
+    });
+  },
+
+  callSafetyContact() {
+    const phone = this.data.safetyPlan.contactPhone;
+
+    if (!phone) {
+      wx.showToast({
+        title: "先填写联系人电话",
+        icon: "none"
+      });
+      return;
+    }
+
+    wx.makePhoneCall({
+      phoneNumber: phone
+    });
   },
 
   saveUrge() {
